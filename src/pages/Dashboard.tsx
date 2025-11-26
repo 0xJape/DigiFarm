@@ -1,0 +1,560 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { 
+  Beef, 
+  HeartPulse, 
+  Users, 
+  TrendingUp, 
+  AlertCircle, 
+  CheckCircle, 
+  Info, 
+  AlertTriangle, 
+  Plus,
+  Edit,
+  Trash2,
+  Activity,
+  Clock,
+  User,
+  type LucideIcon, 
+  FileExclamationPoint, 
+  AlertOctagon
+} from 'lucide-react';
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  change?: string;
+  changeType?: 'positive' | 'negative' | 'neutral';
+  subtitle?: string;
+  icon?: LucideIcon;
+  iconBg?: string;
+}
+
+function StatCard({ title, value, change, changeType = 'neutral', subtitle, icon: Icon, iconBg = 'bg-slate-100' }: StatCardProps) {
+  const changeColors = {
+    positive: 'text-emerald-600 bg-emerald-50',
+    negative: 'text-red-600 bg-red-50',
+    neutral: 'text-slate-500 bg-slate-50',
+  };
+
+  return (
+    <div className="group p-5 bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <p className="text-xs font-medium text-slate-500 mb-1">{title}</p>
+          <p className="text-2xl font-semibold text-slate-900">{value}</p>
+        </div>
+        {Icon && (
+          <div className={`${iconBg} w-9 h-9 rounded-lg flex items-center justify-center`}>
+            <Icon size={18} className="text-slate-600" />
+          </div>
+        )}
+      </div>
+      
+      <div className="flex items-center justify-between">
+        {change && (
+          <div className="flex items-center space-x-1">
+            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${changeColors[changeType]}`}>
+              {changeType === 'positive' && '↑ '}
+              {changeType === 'negative' && '↓ '}
+              {change}
+            </span>
+            <span className="text-xs text-slate-500">from last month</span>
+          </div>
+        )}
+        {subtitle && !change && <span className="text-xs text-slate-500">{subtitle}</span>}
+      </div>
+    </div>
+  );
+}
+
+interface AlertProps {
+  type: 'warning' | 'info' | 'success' | 'critical';
+  message: string;
+  timestamp: string;
+  animalId?: string;
+}
+
+function AlertItem({ type, message, timestamp, animalId }: AlertProps) {
+  const config = {
+    warning: { Icon: AlertTriangle, text: 'text-amber-700', bg: 'bg-amber-50' },
+    info: { Icon: Info, text: 'text-blue-700', bg: 'bg-blue-50' },
+    success: { Icon: CheckCircle, text: 'text-emerald-700', bg: 'bg-emerald-50' },
+    critical: { Icon: AlertCircle, text: 'text-red-700', bg: 'bg-red-50' },
+  };
+
+  const { Icon, text, bg } = config[type];
+
+  const content = (
+    <>
+      <div className={`flex-shrink-0 ${bg} w-6 h-6 rounded flex items-center justify-center mt-0.5`}>
+        <Icon size={14} className={text} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-slate-900">{message}</p>
+        <p className="text-xs text-slate-500 mt-0.5">{timestamp}</p>
+      </div>
+      {animalId && (
+        <span className="flex-shrink-0 text-xs font-medium text-slate-600 group-hover:text-slate-900">
+          →
+        </span>
+      )}
+    </>
+  );
+
+  if (animalId) {
+    return (
+      <Link
+        to={`/livestock/${animalId}`}
+        className="group flex items-start space-x-3 p-3 hover:bg-slate-50 rounded-lg transition-all cursor-pointer"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="group flex items-start space-x-3 p-3 hover:bg-slate-50 rounded-lg transition-all">
+      {content}
+    </div>
+  );
+}
+
+interface TaskProps {
+  task: string;
+  dueDate: string;
+  completed?: boolean;
+  onToggle?: () => void;
+  priority?: 'high' | 'medium' | 'low';
+}
+
+function TaskItem({ task, dueDate, completed = false, onToggle, priority = 'medium' }: TaskProps) {
+  const priorityColors = {
+    high: 'border-red-200',
+    medium: 'border-slate-200',
+    low: 'border-slate-200',
+  };
+
+  return (
+    <div className={`group flex items-center space-x-3 p-3 border-l-2 ${priorityColors[priority]} hover:bg-slate-50 rounded transition-all`}>
+      <input
+        type="checkbox"
+        checked={completed}
+        onChange={onToggle}
+        className="h-4 w-4 text-slate-900 rounded border-slate-300 focus:ring-1 focus:ring-slate-400 cursor-pointer"
+      />
+      <div className="flex-1 min-w-0 flex items-center justify-between">
+        <p className={`text-sm ${completed ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+          {task}
+        </p>
+        <span className="text-xs text-slate-500 ml-3">{dueDate}</span>
+      </div>
+    </div>
+  );
+}
+
+interface ActivityLogProps {
+  action: 'added' | 'edited' | 'deleted' | 'health_check' | 'vaccination' | 'breeding';
+  description: string;
+  user: string;
+  timestamp: string;
+  entityType?: 'livestock' | 'health' | 'breeding' | 'system';
+  entityId?: string;
+}
+
+function ActivityLogItem({ action, description, user, timestamp, entityType, entityId }: ActivityLogProps) {
+  const actionConfig = {
+    added: { Icon: Plus, text: 'text-emerald-700', bg: 'bg-emerald-50', label: 'Added' },
+    edited: { Icon: Edit, text: 'text-blue-700', bg: 'bg-blue-50', label: 'Edited' },
+    deleted: { Icon: Trash2, text: 'text-red-700', bg: 'bg-red-50', label: 'Deleted' },
+    health_check: { Icon: HeartPulse, text: 'text-purple-700', bg: 'bg-purple-50', label: 'Health' },
+    vaccination: { Icon: CheckCircle, text: 'text-teal-700', bg: 'bg-teal-50', label: 'Vaccine' },
+    breeding: { Icon: Users, text: 'text-amber-700', bg: 'bg-amber-50', label: 'Breeding' },
+  };
+
+  const { Icon, text, bg, label } = actionConfig[action];
+
+  return (
+    <div className="group flex items-start space-x-3 p-3 hover:bg-slate-50 rounded-lg transition-all">
+      <div className={`flex-shrink-0 ${bg} w-8 h-8 rounded-lg flex items-center justify-center`}>
+        <Icon size={14} className={text} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-0.5">
+              <span className={`text-xs font-semibold ${text}`}>{label}</span>
+              {entityType && (
+                <span className="text-xs text-slate-400">•</span>
+              )}
+              {entityType && (
+                <span className="text-xs text-slate-500 capitalize">{entityType}</span>
+              )}
+            </div>
+            <p className="text-sm text-slate-900">{description}</p>
+            <div className="flex items-center space-x-3 mt-1.5">
+              <div className="flex items-center space-x-1 text-xs text-slate-500">
+                <User size={12} />
+                <span>{user}</span>
+              </div>
+              <span className="text-xs text-slate-400">•</span>
+              <div className="flex items-center space-x-1 text-xs text-slate-500">
+                <Clock size={12} />
+                <span>{timestamp}</span>
+              </div>
+            </div>
+          </div>
+          {entityId && entityType === 'livestock' && (
+            <Link
+              to={`/livestock/${entityId}`}
+              className="flex-shrink-0 text-xs font-medium text-slate-600 hover:text-slate-900 ml-2"
+            >
+              View →
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Dashboard() {
+  const [tasks, setTasks] = React.useState([
+    { id: 1, task: 'Vaccinate 12 calves', dueDate: 'Nov 21', completed: false, priority: 'high' as const },
+    { id: 2, task: 'Health checkup: Herd B', dueDate: 'Nov 22', completed: false, priority: 'medium' as const },
+    { id: 3, task: 'Pregnancy scan: 15 cows', dueDate: 'Nov 23', completed: false, priority: 'high' as const },
+    { id: 4, task: 'Feed inventory restock', dueDate: 'Nov 24', completed: false, priority: 'low' as const },
+  ]);
+
+  const toggleTask = (id: number) => {
+    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  };
+
+  // Mock activity logs data
+  const activityLogs: ActivityLogProps[] = [
+    {
+      action: 'added',
+      description: 'New cattle added to herd - ID: C-026',
+      user: 'Laiza Limpin',
+      timestamp: '10 minutes ago',
+      entityType: 'livestock',
+      entityId: 'C-026'
+    },
+    {
+      action: 'edited',
+      description: 'Updated weight record for goat G-015 (45.2kg → 47.8kg)',
+      user: 'Marlo Gel Alkuino',
+      timestamp: '2 hours ago',
+      entityType: 'livestock',
+      entityId: 'G-015'
+    },
+    {
+      action: 'vaccination',
+      description: 'FMD vaccine administered to 12 cattle',
+      user: 'Kyle Stephen Silaya',
+      timestamp: '3 hours ago',
+      entityType: 'health'
+    },
+    {
+      action: 'breeding',
+      description: 'Breeding record created for cow C-011 with bull C-002',
+      user: 'Laiza Limpin',
+      timestamp: '5 hours ago',
+      entityType: 'breeding',
+      entityId: 'C-011'
+    },
+    {
+      action: 'edited',
+      description: 'Changed livestock S-012 status to "Sold"',
+      user: 'Jalel Prince Gayo',
+      timestamp: '6 hours ago',
+      entityType: 'livestock',
+      entityId: 'S-012'
+    },
+    {
+      action: 'edited',
+      description: 'Updated pregnancy status for cattle C-011 to "Pregnant"',
+      user: 'Marlo Gel Alkuino',
+      timestamp: '8 hours ago',
+      entityType: 'breeding',
+      entityId: 'C-011'
+    },
+    {
+      action: 'added',
+      description: 'New sheep added to flock - ID: S-017',
+      user: 'Kyle Stephen Silaya',
+      timestamp: '10 hours ago',
+      entityType: 'livestock',
+      entityId: 'S-017'
+    },
+    {
+      action: 'edited',
+      description: 'Body condition score updated for cattle C-002 (3.5 → 4.0)',
+      user: 'Jalel Prince Gayo',
+      timestamp: '1 day ago',
+      entityType: 'livestock',
+      entityId: 'C-002'
+    }
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Animals"
+          value="67"
+          change="10.2%"
+          changeType="positive"
+          icon={Beef}
+          iconBg="bg-slate-100"  
+        />
+        <StatCard
+          title="Healthy Animals"
+          value="60"
+          change="1.8%"
+          changeType="positive"
+          icon={HeartPulse}
+          iconBg="bg-emerald-50"
+        />
+        <StatCard
+          title="Activities this Week"
+          value="18"
+          change="12.5%"
+          changeType="positive"
+          icon={AlertOctagon}
+          iconBg="bg-amber-50"
+        />
+        <StatCard
+          title="Active Breeding"
+          value="33"
+          change="8.2%"
+          changeType="positive"
+          icon={Users}
+          iconBg="bg-blue-50"
+        />
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        {/* Recent Alerts - Takes 2 columns */}
+        <div className="xl:col-span-2">
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-slate-900">Alerts</h3>
+                <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded">
+                  4
+                </span>
+              </div>
+            </div>
+            <div className="p-2">
+              <AlertItem
+                type="warning"
+                message="3-Month Pregnancy Check: Cow C-011 bred on Sep 15 - Check due by Dec 15"
+                timestamp="23 days"
+                animalId="C-011"
+              />
+              <AlertItem
+                type="warning"
+                message="3-Month Pregnancy Check: Cow C-023 bred on Oct 5 - Check overdue"
+                timestamp="Overdue"
+                animalId="C-023"
+              />
+              <AlertItem
+                type="warning"
+                message="Rabies vaccine overdue for Boer Doe G-012"
+                timestamp="Overdue"
+                animalId="G-012"
+              />
+              <AlertItem
+                type="info"
+                message="CDT vaccine due for Dorper Ewe S-005 on Dec 8"
+                timestamp="16 days"
+                animalId="S-005"
+              />
+              <AlertItem
+                type="success"
+                message="Withdrawal period ends today: Brahman Bull C-008 can be cleared for sale"
+                timestamp="Today"
+                animalId="C-008"
+              />
+            </div>
+            <div className="px-5 py-3 border-t border-slate-200">
+              <Link
+                to="/alerts"
+                className="text-xs font-medium text-slate-600 hover:text-slate-900"
+              >
+                View all →
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="xl:col-span-1">
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <h3 className="text-sm font-semibold text-slate-900">Actions</h3>
+            </div>
+            <div className="p-3 space-y-2">
+              <button className="w-full px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors">
+                Add Animal
+              </button>
+              <button className="w-full px-4 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
+                Health Check
+              </button>
+              <button className="w-full px-4 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
+                View Reports
+              </button>
+              <Link
+                to="/livestock"
+                className="block w-full px-4 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors text-center"
+              >
+                Search
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Livestock Chart */}
+      <div className="grid grid-cols-1 gap-4">
+        {/* Livestock Chart */}
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200 shadow-sm">
+          <div className="px-5 py-4 border-b border-slate-200 bg-white/50 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-slate-900">Livestock Distribution</h3>
+              <select className="text-xs border border-slate-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <option>This Month</option>
+                <option>Last 3 Months</option>
+                <option>This Year</option>
+              </select>
+            </div>
+          </div>
+          <div className="p-6">
+            {/* Pie Chart */}
+            <div className="flex flex-col items-center mb-8">
+              <div className="relative mb-3">
+                <svg viewBox="0 0 200 200" className="w-56 h-56 drop-shadow-lg">
+                  {/* Cattle - 37% - Blue */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="40"
+                    strokeDasharray="186 314"
+                    strokeDashoffset="85"
+                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3))' }}
+                  />
+                  {/* Goats - 39% - Orange */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#f97316"
+                    strokeWidth="40"
+                    strokeDasharray="195 305"
+                    strokeDashoffset="-101"
+                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(249, 115, 22, 0.3))' }}
+                  />
+                  {/* Sheep - 24% - Purple */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="40"
+                    strokeDasharray="120 380"
+                    strokeDashoffset="-296"
+                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))' }}
+                  />
+                  {/* Center circle for donut effect */}
+                  <circle cx="100" cy="100" r="60" fill="white" />
+                  {/* Center number */}
+                  <text x="100" y="110" textAnchor="middle" className="text-4xl fill-slate-900 font-bold">
+                    67
+                  </text>
+                </svg>
+              </div>
+              {/* Total Animals Label */}
+              <p className="text-sm text-slate-500 font-medium">Total Animals</p>
+            </div>
+
+            {/* Legend with Cards */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="bg-white rounded-lg p-3 border border-blue-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500 shadow-sm"></div>
+                  <span className="text-xs font-medium text-slate-600">Cattle</span>
+                </div>
+                <div className="text-2xl font-bold text-slate-900">25</div>
+                <div className="text-xs text-slate-500 mt-1">37% of total</div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-3 border border-orange-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-orange-500 shadow-sm"></div>
+                  <span className="text-xs font-medium text-slate-600">Goats</span>
+                </div>
+                <div className="text-2xl font-bold text-slate-900">26</div>
+                <div className="text-xs text-slate-500 mt-1">39% of total</div>
+              </div>
+              
+              <div className="bg-white rounded-lg p-3 border border-purple-100 hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-3 h-3 rounded-full bg-purple-500 shadow-sm"></div>
+                  <span className="text-xs font-medium text-slate-600">Sheep</span>
+                </div>
+                <div className="text-2xl font-bold text-slate-900">16</div>
+                <div className="text-xs text-slate-500 mt-1">24% of total</div>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-center pt-4 border-t border-slate-200/50">
+              <div className="flex items-center space-x-2 px-3 py-1.5 bg-emerald-50 rounded-full">
+                <TrendingUp size={14} className="text-emerald-600" />
+                <span className="text-xs font-medium text-emerald-700">10.2% growth from last month</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Activity Logs */}
+      <div className="bg-white rounded-lg border border-slate-200">
+        <div className="px-5 py-4 border-b border-slate-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Activity className="w-4 h-4 text-slate-600" />
+              <h3 className="text-sm font-semibold text-slate-900">Recent Activity</h3>
+            </div>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded">
+              {activityLogs.length}
+            </span>
+          </div>
+        </div>
+        <div className="p-2 space-y-1 max-h-96 overflow-y-auto scrollbar-thin">
+          {activityLogs.map((log, index) => (
+            <ActivityLogItem key={index} {...log} />
+          ))}
+        </div>
+        <div className="px-5 py-3 border-t border-slate-200">
+          <Link
+            to="/activity"
+            className="text-xs font-medium text-slate-600 hover:text-slate-900"
+          >
+            View all activity →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

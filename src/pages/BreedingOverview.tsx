@@ -1,0 +1,834 @@
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { 
+  Heart,
+  Calendar,
+  TrendingUp,
+  Plus,
+  Search,
+  User,
+  Users,
+  Save,
+  AlertCircle
+} from 'lucide-react';
+
+// Mock data for recent breeding records
+const recentBreedings = [
+  {
+    // Breeding Table
+    id: 1,
+    species: 'cattle',
+    breedingDate: '2025-09-15', // Check due in ~1 month
+    breedingTime: '09:30 AM',
+    breedingLocation: 'Breeding Pen 1',
+    handlerName: 'Marlo Gel',
+    notes: 'Observed natural mating, dam in standing heat',
+    recordedBy: 'Marlo Gel',
+    // Dam Table
+    damId: 'C-023',
+    damName: 'Brahman Heifer',
+    damBreed: 'Brahman',
+    damAge: '4 years',
+    damHealthStatus: 'Healthy',
+    damBodyCondition: 3.5,
+    heatSignsObserved: 'Standing heat, clear mucus discharge',
+    // Sire Table
+    sireId: 'B-001',
+    sireName: 'Brahman Bull',
+    sireBreed: 'Brahman',
+    sireAge: '5 years',
+    // Breeding Status Table
+    status: 'Not Confirmed'
+  },
+  {
+    // Breeding Table
+    id: 2,
+    species: 'goat',
+    breedingDate: '2025-10-05', // Check due in ~1.5 months
+    breedingTime: '02:15 PM',
+    breedingLocation: 'Goat Paddock',
+    handlerName: 'Kyle Stephen',
+    notes: 'First breeding for this maiden doe',
+    recordedBy: 'Kyle Stephen',
+    // Dam Table
+    damId: 'G-019',
+    damName: 'Boer Maiden Doe',
+    damBreed: 'Boer',
+    damAge: '1.5 years',
+    damHealthStatus: 'Healthy',
+    damBodyCondition: 3,
+    heatSignsObserved: 'Tail wagging, vocalization',
+    // Sire Table
+    sireId: 'G-001',
+    sireName: 'Boer Buck',
+    sireBreed: 'Boer',
+    sireAge: '3 years',
+    // Breeding Status Table
+    status: 'Confirmed'
+  },
+  {
+    // Breeding Table
+    id: 3,
+    species: 'sheep',
+    breedingDate: '2025-11-14', // Check due in ~2.5 months
+    breedingTime: '10:00 AM',
+    breedingLocation: 'Sheep Paddock',
+    handlerName: 'Laiza Limpin',
+    notes: 'Ram introduced to breeding group',
+    recordedBy: 'Laiza Limpin',
+    // Dam Table
+    damId: 'S-005',
+    damName: 'Dorper Ewe',
+    damBreed: 'Dorper',
+    damAge: '3 years',
+    damHealthStatus: 'Healthy',
+    damBodyCondition: 3.5,
+    heatSignsObserved: 'Receptive to ram',
+    // Sire Table
+    sireId: 'S-001',
+    sireName: 'Dorper Ram',
+    sireBreed: 'Dorper',
+    sireAge: '4 years',
+    // Breeding Status Table
+    status: 'Not Confirmed'
+  },
+  {
+    // Breeding Table
+    id: 4,
+    species: 'cattle',
+    breedingDate: '2025-09-20',
+    breedingTime: '08:45 AM',
+    breedingLocation: 'Breeding Pen 2',
+    handlerName: 'Marlo Gel',
+    notes: 'Natural breeding observed',
+    recordedBy: 'Marlo Gel',
+    // Dam Table
+    damId: 'C-015',
+    damName: 'Brahman Cow',
+    damBreed: 'Brahman',
+    damAge: '5 years',
+    damHealthStatus: 'Healthy',
+    damBodyCondition: 4,
+    heatSignsObserved: 'Clear heat signs observed',
+    // Sire Table
+    sireId: 'B-002',
+    sireName: 'Angus Bull',
+    sireBreed: 'Angus',
+    sireAge: '6 years',
+    // Breeding Status Table
+    status: 'Confirmed'
+  },
+  {
+    // Breeding Table
+    id: 5,
+    species: 'goat',
+    breedingDate: '2025-11-21', // Just bred yesterday
+    breedingTime: '11:30 AM',
+    breedingLocation: 'Goat Paddock',
+    handlerName: 'Kyle Stephen',
+    notes: 'Second breeding for this doe',
+    recordedBy: 'Kyle Stephen',
+    // Dam Table
+    damId: 'G-008',
+    damName: 'Boer Doe',
+    damBreed: 'Boer',
+    damAge: '2 years',
+    damHealthStatus: 'Healthy',
+    damBodyCondition: 3.5,
+    heatSignsObserved: 'Strong vocalization, tail flagging',
+    // Sire Table
+    sireId: 'G-001',
+    sireName: 'Boer Buck',
+    sireBreed: 'Boer',
+    sireAge: '3 years',
+    // Breeding Status Table
+    status: 'Not Confirmed'
+  }
+];
+
+// Active breeding animals (sires)
+const activeSires = [
+  {
+    id: 'B-001',
+    name: 'Brahman Bull',
+    species: 'Cattle',
+    breed: 'Brahman',
+    age: '4y 2m',
+    totalBreedings: 8,
+    successRate: 87,
+    lastBreeding: '2024-11-20'
+  },
+  {
+    id: 'B-002',
+    name: 'Angus Bull',
+    species: 'Cattle', 
+    breed: 'Angus',
+    age: '5y 1m',
+    totalBreedings: 6,
+    successRate: 92,
+    lastBreeding: '2024-11-10'
+  },
+  {
+    id: 'G-001',
+    name: 'Boer Buck',
+    species: 'Goat',
+    breed: 'Boer',
+    age: '3y 1m',
+    totalBreedings: 12,
+    successRate: 83,
+    lastBreeding: '2024-11-18'
+  },
+  {
+    id: 'S-001',
+    name: 'Dorper Ram',
+    species: 'Sheep',
+    breed: 'Dorper',
+    age: '4y 0m',
+    totalBreedings: 9,
+    successRate: 89,
+    lastBreeding: '2024-11-15'
+  }
+];
+
+export default function BreedingOverview() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [speciesFilter, setSpeciesFilter] = React.useState<'all' | 'cattle' | 'goat' | 'sheep'>('all');
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  // Calculate 3-month breeding check date
+  const getBreedingCheckDate = (breedingDate: string) => {
+    const date = new Date(breedingDate);
+    date.setMonth(date.getMonth() + 3);
+    return date;
+  };
+
+  // Check if breeding check is due soon (within 7 days)
+  const isBreedingCheckDueSoon = (breedingDate: string) => {
+    const checkDate = getBreedingCheckDate(breedingDate);
+    const today = new Date();
+    const daysUntilCheck = Math.ceil((checkDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    return daysUntilCheck <= 7 && daysUntilCheck >= 0;
+  };
+
+  // Check if breeding check is overdue
+  const isBreedingCheckOverdue = (breedingDate: string) => {
+    const checkDate = getBreedingCheckDate(breedingDate);
+    const today = new Date();
+    return today > checkDate;
+  };
+
+  const [formData, setFormData] = React.useState({
+    // Breeding Table
+    species: '',
+    breedingDate: new Date().toISOString().split('T')[0],
+    breedingTime: '',
+    breedingLocation: '',
+    handlerName: '',
+    notes: '',
+    // Dam Table
+    damId: '',
+    damBreed: '',
+    damAge: '',
+    damHealthStatus: '',
+    damBodyCondition: '',
+    heatSignsObserved: '',
+    // Sire Table
+    sireId: '',
+    sireBreed: '',
+    sireAge: '',
+    // Breeding Status Table
+    status: 'Not Confirmed'
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log('New breeding record:', formData);
+    setIsModalOpen(false);
+    // Reset form
+    setFormData({
+      // Breeding Table
+      species: '',
+      breedingDate: new Date().toISOString().split('T')[0],
+      breedingTime: '',
+      breedingLocation: '',
+      handlerName: '',
+      notes: '',
+      // Dam Table
+      damId: '',
+      damBreed: '',
+      damAge: '',
+      damHealthStatus: '',
+      damBodyCondition: '',
+      heatSignsObserved: '',
+      // Sire Table
+      sireId: '',
+      sireBreed: '',
+      sireAge: '',
+      // Breeding Status Table
+      status: 'Not Confirmed'
+    });
+  };
+
+  const filteredBreedings = recentBreedings.filter(breeding => {
+    const matchesSearch = breeding.damId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         breeding.sireId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         breeding.damBreed.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSpecies = speciesFilter === 'all' || breeding.damBreed.toLowerCase().includes(speciesFilter);
+    
+    return matchesSearch && matchesSpecies;
+  });
+
+  const totalBreedings = recentBreedings.length;
+  const naturalBreedings = recentBreedings.filter(b => b.method === 'Natural').length;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">Breeding Records</h1>
+          <p className="text-sm text-slate-600 mt-1">Record and manage breeding activities (sire and dam pairings)</p>
+        </div>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+        >
+          <Plus size={16} />
+          <span>Record New Breeding</span>
+        </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg border border-pink-200 p-5">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-pink-900">Total Breedings</h3>
+            <Heart size={20} className="text-pink-600" />
+          </div>
+          <p className="text-3xl font-bold text-pink-600">{totalBreedings}</p>
+          <p className="text-xs text-pink-700 mt-1">This month</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200 p-5">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-blue-900">Natural Breeding</h3>
+            <Users size={20} className="text-blue-600" />
+          </div>
+          <p className="text-3xl font-bold text-blue-600">{naturalBreedings}</p>
+          <p className="text-xs text-blue-700 mt-1">Natural mating</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg border border-emerald-200 p-5">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium text-emerald-900">Active Sires</h3>
+            <User size={20} className="text-emerald-600" />
+          </div>
+          <p className="text-3xl font-bold text-emerald-600">{activeSires.length}</p>
+          <p className="text-xs text-emerald-700 mt-1">Bulls, bucks, rams</p>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="bg-white rounded-lg border border-slate-200 p-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="relative flex-1">
+            <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by dam ID, sire ID, or breed..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            <select
+              value={speciesFilter}
+              onChange={(e) => setSpeciesFilter(e.target.value as any)}
+              className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="all">All Species</option>
+              <option value="cattle">Cattle</option>
+              <option value="goat">Goat</option>
+              <option value="sheep">Sheep</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Recent Breeding Records */}
+        <div className="xl:col-span-2">
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-semibold text-slate-900">Recent Breeding Records</h2>
+            </div>
+            <div className="divide-y divide-slate-200">
+              {filteredBreedings.map((breeding) => {
+                const checkDate = getBreedingCheckDate(breeding.breedingDate);
+                const isDueSoon = isBreedingCheckDueSoon(breeding.breedingDate);
+                const isOverdue = isBreedingCheckOverdue(breeding.breedingDate);
+                const daysUntilCheck = Math.ceil((checkDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+
+                return (
+                  <div
+                    key={breeding.id}
+                    className="p-5 hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/breeding/${breeding.id}`)}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center space-x-2 mb-1 flex-wrap">
+                          <span className="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full capitalize">
+                            {breeding.species}
+                          </span>
+                          <Calendar size={16} className="text-slate-400" />
+                          <span className="font-semibold text-slate-900">
+                            {new Date(breeding.breedingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            breeding.status === 'Confirmed' 
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-amber-100 text-amber-700'
+                          }`}>
+                            {breeding.status === 'Confirmed' ? '✓ Confirmed' : '⏳ Not Confirmed'}
+                          </span>
+                          {isOverdue && (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                              <AlertCircle size={12} className="mr-1" />
+                              Check Overdue
+                            </span>
+                          )}
+                          {isDueSoon && !isOverdue && (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded-full">
+                              <AlertCircle size={12} className="mr-1" />
+                              Check Due Soon
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500">Recorded by {breeding.recordedBy}</p>
+                      </div>
+                    </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    {/* Dam (Female) */}
+                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-xs font-semibold text-pink-900">♀ Dam (Female)</span>
+                      </div>
+                      <Link 
+                        to={`/livestock/${breeding.damId}`}
+                        className="text-sm font-semibold text-primary-600 hover:text-primary-700 mb-0.5 block"
+                      >
+                        {breeding.damId}
+                      </Link>
+                      <p className="text-xs text-slate-600">{breeding.damBreed}</p>
+                    </div>
+
+                    {/* Sire (Male) */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-xs font-semibold text-blue-900">♂ Sire (Male)</span>
+                      </div>
+                      <Link 
+                        to={`/livestock/${breeding.sireId}`}
+                        className="text-sm font-semibold text-primary-600 hover:text-primary-700 mb-0.5 block"
+                      >
+                        {breeding.sireId}
+                      </Link>
+                      <p className="text-xs text-slate-600">{breeding.sireBreed}</p>
+                    </div>
+                  </div>
+
+                  {breeding.notes && (
+                    <div className="bg-slate-50 rounded-lg p-2 mt-3">
+                      <p className="text-xs text-slate-600">
+                        <span className="font-medium">Notes:</span> {breeding.notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Active Sires Sidebar */}
+        <div className="xl:col-span-1">
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-semibold text-slate-900">Active Sires</h2>
+            </div>
+            <div className="p-4 space-y-3">
+              {activeSires.map((sire) => (
+                <Link
+                  key={sire.id}
+                  to={`/livestock/${sire.id}`}
+                  className="block p-3 rounded-lg border border-slate-200 hover:border-primary-300 hover:bg-primary-50 transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="font-semibold text-slate-900 text-sm">{sire.id}</h3>
+                      <p className="text-xs text-slate-600">{sire.breed}</p>
+                    </div>
+                    <span className="text-xs font-medium text-primary-600">{sire.age}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <p className="text-slate-500">Breedings</p>
+                      <p className="font-semibold text-slate-900">{sire.totalBreedings}</p>
+                    </div>
+                    <div>
+                      <p className="text-slate-500">Success Rate</p>
+                      <p className="font-semibold text-emerald-600">{sire.successRate}%</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-2 pt-2 border-t border-slate-200">
+                    <p className="text-xs text-slate-500">
+                      Last breeding: {new Date(sire.lastBreeding).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="bg-white rounded-lg border border-slate-200 mt-4 p-5">
+            <h3 className="text-sm font-semibold text-slate-900 mb-4">Breeding Statistics</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">This Month</span>
+                <span className="text-sm font-semibold text-slate-900">{totalBreedings}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">This Year</span>
+                <span className="text-sm font-semibold text-slate-900">48</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-600">Avg Success Rate</span>
+                <span className="text-sm font-semibold text-emerald-600">88%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* New Breeding Record Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-slate-900">Record New Breeding</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              {/* Basic Information */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Basic Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breeding Date <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="breedingDate"
+                      value={formData.breedingDate}
+                      onChange={handleInputChange}
+                      required
+                      max={new Date().toISOString().split('T')[0]}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Species <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="species"
+                      value={formData.species}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Select species</option>
+                      <option value="Cattle">Cattle</option>
+                      <option value="Goat">Goat</option>
+                      <option value="Sheep">Sheep</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dam (Female) Information */}
+              <div className="bg-pink-50 border border-pink-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="text-sm font-semibold text-pink-900">♀ Dam (Female) Information</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Dam Livestock ID <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="damId"
+                      value={formData.damId}
+                      onChange={handleInputChange}
+                      placeholder="e.g., C-023"
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breed <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="damBreed"
+                      value={formData.damBreed}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Brahman"
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Age
+                    </label>
+                    <input
+                      type="text"
+                      name="damAge"
+                      value={formData.damAge}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 3y 2m"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Health Status
+                    </label>
+                    <select
+                      name="damHealthStatus"
+                      value={formData.damHealthStatus}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Select status</option>
+                      <option value="Healthy">Healthy</option>
+                      <option value="Monitor">Monitor</option>
+                      <option value="Sick">Sick</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Body Condition Score (1-5)
+                    </label>
+                    <input
+                      type="number"
+                      name="damBodyCondition"
+                      value={formData.damBodyCondition}
+                      onChange={handleInputChange}
+                      step="0.5"
+                      min="1"
+                      max="5"
+                      placeholder="e.g., 3.5"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Heat Signs Observed
+                    </label>
+                    <input
+                      type="text"
+                      name="heatSignsObserved"
+                      value={formData.heatSignsObserved}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Standing heat"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Sire (Male) Information */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="text-sm font-semibold text-blue-900">♂ Sire (Male) Information</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Sire Livestock ID <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="sireId"
+                      value={formData.sireId}
+                      onChange={handleInputChange}
+                      placeholder="e.g., B-001"
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breed <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="sireBreed"
+                      value={formData.sireBreed}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Brahman"
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Age
+                    </label>
+                    <input
+                      type="text"
+                      name="sireAge"
+                      value={formData.sireAge}
+                      onChange={handleInputChange}
+                      placeholder="e.g., 4y 2m"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Breeding Details */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Breeding Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breeding Time
+                    </label>
+                    <input
+                      type="time"
+                      name="breedingTime"
+                      value={formData.breedingTime}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breeding Location
+                    </label>
+                    <input
+                      type="text"
+                      name="breedingLocation"
+                      value={formData.breedingLocation}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Breeding Pen A, Pasture 3"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Handler/Observer Name
+                    </label>
+                    <input
+                      type="text"
+                      name="handlerName"
+                      value={formData.handlerName}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Marlo Gel"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Breeding Status <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="Not Confirmed">Not Confirmed</option>
+                      <option value="Confirmed">Confirmed</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Notes & Observations
+                </label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleInputChange}
+                  rows={3}
+                  placeholder="Any observations, breeding behavior, environmental conditions, or additional information..."
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+                >
+                  <Save size={16} />
+                  <span>Save Breeding Record</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
