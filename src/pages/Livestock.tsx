@@ -7,6 +7,7 @@ interface LivestockItem {
   tag: string;
   species: 'Cattle' | 'Goat' | 'Sheep';
   breed: string;
+  category: string;
   sex: 'Male' | 'Female';
   age: string;
   status: 'Healthy' | 'Monitor' | 'Sick';
@@ -15,20 +16,20 @@ interface LivestockItem {
 // Sample data matching farm inventory (showing 10 animals from 67 total)
 const mockLivestock: LivestockItem[] = [
   // Cattle samples (from 25 total: 2 bulls, 1 yearling bull, 11 cows, 8 heifers, 3 calves)
-  { id: 'C-001', tag: 'C-001', species: 'Cattle', breed: 'Brahman Bull', sex: 'Male', age: '4y 2m', status: 'Healthy' },
-  { id: 'C-015', tag: 'C-015', species: 'Cattle', breed: 'Brahman Cow', sex: 'Female', age: '5y 8m', status: 'Healthy' },
-  { id: 'C-023', tag: 'C-023', species: 'Cattle', breed: 'Brahman Heifer', sex: 'Female', age: '2y 3m', status: 'Monitor' },
+  { id: 'C-001', tag: 'C-001', species: 'Cattle', breed: 'Brahman', category: 'Bull', sex: 'Male', age: '4y 2m', status: 'Healthy' },
+  { id: 'C-015', tag: 'C-015', species: 'Cattle', breed: 'Brahman', category: 'Cow', sex: 'Female', age: '5y 8m', status: 'Healthy' },
+  { id: 'C-023', tag: 'C-023', species: 'Cattle', breed: 'Brahman', category: 'Heifer', sex: 'Female', age: '2y 3m', status: 'Monitor' },
   
   // Goat samples (from 26 total: 1 buck, 11 does, 11 maiden does, 3 kids)
-  { id: 'G-001', tag: 'G-001', species: 'Goat', breed: 'Boer Buck', sex: 'Male', age: '3y 1m', status: 'Healthy' },
-  { id: 'G-008', tag: 'G-008', species: 'Goat', breed: 'Boer Doe', sex: 'Female', age: '2y 7m', status: 'Healthy' },
-  { id: 'G-019', tag: 'G-019', species: 'Goat', breed: 'Boer Maiden Doe', sex: 'Female', age: '1y 4m', status: 'Healthy' },
-  { id: 'G-025', tag: 'G-025', species: 'Goat', breed: 'Boer Kid', sex: 'Female', age: '0y 5m', status: 'Healthy' },
+  { id: 'G-001', tag: 'G-001', species: 'Goat', breed: 'Anglo-Nubian', category: 'Buck', sex: 'Male', age: '3y 1m', status: 'Healthy' },
+  { id: 'G-008', tag: 'G-008', species: 'Goat', breed: 'Anglo-Nubian', category: 'Doe', sex: 'Female', age: '2y 7m', status: 'Healthy' },
+  { id: 'G-019', tag: 'G-019', species: 'Goat', breed: 'Native/Philippine Native', category: 'Maiden Doe', sex: 'Female', age: '1y 4m', status: 'Healthy' },
+  { id: 'G-025', tag: 'G-025', species: 'Goat', breed: 'Crossbreed', category: 'Kid', sex: 'Female', age: '0y 5m', status: 'Healthy' },
   
   // Sheep samples (from 16 total: 1 ram, 8 ewes, 3 maiden ewes, 4 lambs)
-  { id: 'S-001', tag: 'S-001', species: 'Sheep', breed: 'Dorper Ram', sex: 'Male', age: '4y 0m', status: 'Healthy' },
-  { id: 'S-005', tag: 'S-005', species: 'Sheep', breed: 'Dorper Ewe', sex: 'Female', age: '3y 2m', status: 'Sick' },
-  { id: 'S-013', tag: 'S-013', species: 'Sheep', breed: 'Dorper Lamb', sex: 'Male', age: '0y 6m', status: 'Healthy' },
+  { id: 'S-001', tag: 'S-001', species: 'Sheep', breed: 'Barbados Blackbelly', category: 'Ram', sex: 'Male', age: '4y 0m', status: 'Healthy' },
+  { id: 'S-005', tag: 'S-005', species: 'Sheep', breed: 'Native/Philippine Native', category: 'Ewe', sex: 'Female', age: '3y 2m', status: 'Sick' },
+  { id: 'S-013', tag: 'S-013', species: 'Sheep', breed: 'Crossbreed', category: 'Lamb', sex: 'Male', age: '0y 6m', status: 'Healthy' },
 ];
 
 export default function Livestock() {
@@ -223,6 +224,7 @@ export default function Livestock() {
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">ID</th>
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Species</th>
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Breed</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Category</th>
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Sex</th>
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Age</th>
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
@@ -232,7 +234,7 @@ export default function Livestock() {
             <tbody className="divide-y divide-slate-200">
               {filteredLivestock.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center">
+                  <td colSpan={8} className="px-5 py-12 text-center">
                     <div className="flex flex-col items-center space-y-2">
                       <Search size={40} className="text-slate-300" />
                       <p className="text-slate-500 text-sm font-medium">No animals found</p>
@@ -253,6 +255,11 @@ export default function Livestock() {
                       </td>
                       <td className="px-5 py-3">
                         <span className="text-sm text-slate-700">{animal.breed}</span>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                          {animal.category}
+                        </span>
                       </td>
                       <td className="px-5 py-3">
                         <span className="text-sm text-slate-600">{animal.sex}</span>
