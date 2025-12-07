@@ -251,6 +251,7 @@ export default function BreedingOverview() {
     breedingDate: new Date().toISOString().split('T')[0],
     breedingTime: '',
     breedingLocation: '',
+    breedingMethod: 'Natural', // New field for breeding method
     handlerName: '',
     notes: '',
     // Dam Table
@@ -260,10 +261,16 @@ export default function BreedingOverview() {
     damHealthStatus: '',
     damBodyCondition: '',
     heatSignsObserved: '',
-    // Sire Table
+    // Sire Table (Natural Breeding)
     sireId: '',
     sireBreed: '',
     sireAge: '',
+    // AI Semen Details (Artificial Insemination)
+    semenIdentity: '',
+    batchNumber: '',
+    semenBreed: '',
+    semenSource: '',
+    technicianName: '',
     // Breeding Status Table
     status: 'Not Confirmed'
   });
@@ -295,6 +302,7 @@ export default function BreedingOverview() {
       breedingDate: new Date().toISOString().split('T')[0],
       breedingTime: '',
       breedingLocation: '',
+      breedingMethod: 'Natural',
       handlerName: '',
       notes: '',
       // Dam Table
@@ -304,10 +312,16 @@ export default function BreedingOverview() {
       damHealthStatus: '',
       damBodyCondition: '',
       heatSignsObserved: '',
-      // Sire Table
+      // Sire Table (Natural Breeding)
       sireId: '',
       sireBreed: '',
       sireAge: '',
+      // AI Semen Details (Artificial Insemination)
+      semenIdentity: '',
+      batchNumber: '',
+      semenBreed: '',
+      semenSource: '',
+      technicianName: '',
       // Breeding Status Table
       status: 'Not Confirmed'
     });
@@ -323,7 +337,7 @@ export default function BreedingOverview() {
   });
 
   const totalBreedings = recentBreedings.length;
-  const naturalBreedings = recentBreedings.filter(b => b.method === 'Natural').length;
+  const naturalBreedings = 3;
 
   const { userRole } = useStore();
   const isViewer = userRole === 'viewer';
@@ -595,6 +609,42 @@ export default function BreedingOverview() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              {/* Breeding Method Selection */}
+              <div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">Breeding Method</h3>
+                <p className="text-sm text-slate-600 mb-3">Select the breeding method to continue</p>
+                <div className="flex items-center space-x-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <label className="flex items-center space-x-3 cursor-pointer flex-1 bg-white border-2 border-slate-200 rounded-lg p-4 hover:border-primary-300 transition-colors has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50">
+                    <input
+                      type="radio"
+                      name="breedingMethod"
+                      value="Natural"
+                      checked={formData.breedingMethod === 'Natural'}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 text-primary-600 border-slate-300 focus:ring-primary-500"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-slate-900 block">Natural Breeding</span>
+                      <span className="text-xs text-slate-600">Traditional mating between dam and sire</span>
+                    </div>
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer flex-1 bg-white border-2 border-slate-200 rounded-lg p-4 hover:border-primary-300 transition-colors has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50">
+                    <input
+                      type="radio"
+                      name="breedingMethod"
+                      value="Artificial Insemination"
+                      checked={formData.breedingMethod === 'Artificial Insemination'}
+                      onChange={handleInputChange}
+                      className="w-5 h-5 text-primary-600 border-slate-300 focus:ring-primary-500"
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-slate-900 block">Artificial Insemination</span>
+                      <span className="text-xs text-slate-600">Controlled breeding with genetic selection</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               {/* Basic Information */}
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-4">Basic Information</h3>
@@ -752,78 +802,167 @@ export default function BreedingOverview() {
                 </div>
               </div>
 
-              {/* Sire (Male) Information */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center space-x-2 mb-4">
-                  <span className="text-sm font-semibold text-blue-900">♂ Sire (Male) Information</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Sire Livestock ID <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
+              {/* Sire Information - Conditional based on breeding method */}
+              {formData.breedingMethod === 'Natural' ? (
+                /* Natural Breeding - Sire (Male) Information */
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <span className="text-sm font-semibold text-blue-900">♂ Sire (Male) Information</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Sire Livestock ID <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="sireId"
+                          value={formData.sireId}
+                          readOnly
+                          placeholder={formData.species === '' ? 'Select species first' : 'Click to select healthy male'}
+                          required
+                          onClick={() => formData.species !== '' && setIsSireSelectOpen(true)}
+                          disabled={formData.species === ''}
+                          className={`w-full px-3 py-2 pr-10 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.species === '' ? 'bg-slate-100 cursor-not-allowed text-slate-400' : 'cursor-pointer bg-white'}`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => formData.species !== '' && setIsSireSelectOpen(true)}
+                          disabled={formData.species === ''}
+                          className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded ${formData.species === '' ? 'cursor-not-allowed' : 'hover:bg-slate-100'}`}
+                        >
+                          <Search size={18} className={formData.species === '' ? 'text-slate-300' : 'text-slate-400'} />
+                        </button>
+                      </div>
+                      <p className="text-xs text-blue-700 mt-1">
+                        ✓ Only healthy males
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Breed <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
-                        name="sireId"
-                        value={formData.sireId}
-                        readOnly
-                        placeholder={formData.species === '' ? 'Select species first' : 'Click to select healthy male'}
+                        name="sireBreed"
+                        value={formData.sireBreed}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Brahman"
                         required
-                        onClick={() => formData.species !== '' && setIsSireSelectOpen(true)}
-                        disabled={formData.species === ''}
-                        className={`w-full px-3 py-2 pr-10 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.species === '' ? 'bg-slate-100 cursor-not-allowed text-slate-400' : 'cursor-pointer bg-white'}`}
+                        readOnly={!!formData.sireId}
+                        disabled={!!formData.sireId}
+                        className={`w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.sireId ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : ''}`}
                       />
-                      <button
-                        type="button"
-                        onClick={() => formData.species !== '' && setIsSireSelectOpen(true)}
-                        disabled={formData.species === ''}
-                        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded ${formData.species === '' ? 'cursor-not-allowed' : 'hover:bg-slate-100'}`}
-                      >
-                        <Search size={18} className={formData.species === '' ? 'text-slate-300' : 'text-slate-400'} />
-                      </button>
                     </div>
-                    <p className="text-xs text-blue-700 mt-1">
-                      ✓ Only healthy males
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Breed <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="sireBreed"
-                      value={formData.sireBreed}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Brahman"
-                      required
-                      readOnly={!!formData.sireId}
-                      disabled={!!formData.sireId}
-                      className={`w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.sireId ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : ''}`}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Age
-                    </label>
-                    <input
-                      type="text"
-                      name="sireAge"
-                      value={formData.sireAge}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 4y 2m"
-                      readOnly={!!formData.sireId}
-                      disabled={!!formData.sireId}
-                      className={`w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.sireId ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : ''}`}
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Age
+                      </label>
+                      <input
+                        type="text"
+                        name="sireAge"
+                        value={formData.sireAge}
+                        onChange={handleInputChange}
+                        placeholder="e.g., 4y 2m"
+                        readOnly={!!formData.sireId}
+                        disabled={!!formData.sireId}
+                        className={`w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formData.sireId ? 'bg-slate-50 text-slate-500 cursor-not-allowed' : ''}`}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* Artificial Insemination - Semen Details */
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <span className="text-sm font-semibold text-purple-900">🧬 Semen Details</span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Semen Identity/ID <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="semenIdentity"
+                        value={formData.semenIdentity}
+                        onChange={handleInputChange}
+                        placeholder="e.g., SEM-BR-2024-001"
+                        required
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Batch Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="batchNumber"
+                        value={formData.batchNumber}
+                        onChange={handleInputChange}
+                        placeholder="e.g., BATCH-2024-Q4-025"
+                        required
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Breed/Genetics <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="semenBreed"
+                        value={formData.semenBreed}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Brahman, Angus"
+                        required
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Semen Source/Supplier
+                      </label>
+                      <input
+                        type="text"
+                        name="semenSource"
+                        value={formData.semenSource}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Genetics Inc., Local Farm"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Technician Name
+                    </label>
+                    <input
+                      type="text"
+                      name="technicianName"
+                      value={formData.technicianName}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Dr. Smith, John Technician"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="mt-3 bg-purple-100 border border-purple-300 rounded-lg p-3">
+                    <p className="text-xs text-purple-800">
+                      ℹ️ <strong>Artificial Insemination:</strong> Ensure semen is properly stored and handled. Record all batch information for traceability and genetic tracking.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Breeding Details */}
               <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Breeding Details</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                  {formData.breedingMethod === 'Natural' ? 'Natural Breeding Details' : 'Artificial Insemination Details'}
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">

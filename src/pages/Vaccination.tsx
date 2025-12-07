@@ -147,11 +147,14 @@ const vaccinationRecords = [
 
 // Upcoming vaccinations schedule
 const upcomingVaccinations = [
-  { livestockId: 'C-008', name: 'Brahman Bull', vaccine: 'Vitamin B-Complex', dueDate: '2025-12-10', daysLeft: 10 },
-  { livestockId: 'G-019', name: 'Boer Maiden Doe', vaccine: 'Deworming (Ivermectin)', dueDate: '2025-12-10', daysLeft: 10 },
-  { livestockId: 'S-005', name: 'Dorper Ewe', vaccine: 'Vitamin Supplement', dueDate: '2025-12-08', daysLeft: 8 },
-  { livestockId: 'G-012', name: 'Boer Doe', vaccine: 'Deworming (Levamisole)', dueDate: '2025-12-05', daysLeft: 5 }
+  { livestockId: 'C-008', name: 'Brahman Bull', vaccine: 'Vitamin B-Complex', dueDate: '2025-12-10', daysLeft: 3 },
+  { livestockId: 'G-019', name: 'Boer Maiden Doe', vaccine: 'Deworming (Ivermectin)', dueDate: '2025-12-10', daysLeft: 3 },
+  { livestockId: 'S-005', name: 'Dorper Ewe', vaccine: 'Vitamin Supplement', dueDate: '2025-12-08', daysLeft: 1 },
+  { livestockId: 'G-012', name: 'Boer Doe', vaccine: 'Deworming (Levamisole)', dueDate: '2025-12-09', daysLeft: 2 }
 ];
+
+// Separate list for due this week (within 7 days)
+const dueThisWeek = upcomingVaccinations.filter(item => item.daysLeft <= 7);
 
 export default function Vaccination() {
   const { userRole } = useStore();
@@ -171,6 +174,99 @@ export default function Vaccination() {
   const [expandedRecords, setExpandedRecords] = React.useState<string[]>([]);
   const [showAddVaccine, setShowAddVaccine] = React.useState(false);
   const [newVaccineName, setNewVaccineName] = React.useState('');
+  const [confirmedVaccinations, setConfirmedVaccinations] = React.useState<string[]>([]);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = React.useState(false);
+  const [confirmedVaccinationDetails, setConfirmedVaccinationDetails] = React.useState<{
+    livestockId: string;
+    name: string;
+    vaccine: string;
+    nextDueDate: string;
+    interval: string;
+  } | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = React.useState(false);
+  const [pendingConfirmation, setPendingConfirmation] = React.useState<{
+    livestockId: string;
+    name: string;
+    vaccine: string;
+    dueDate: string;
+    daysLeft: number;
+  } | null>(null);
+  const [confirmationFormData, setConfirmationFormData] = React.useState({
+    dosage: '',
+    dosageUnit: 'ml',
+    administrationRoute: 'Intramuscular',
+    administeredBy: '',
+    administeredDate: new Date().toISOString().split('T')[0],
+    notes: ''
+  });
+  
+  // Open confirmation modal
+  const handleConfirmClick = (item: typeof dueThisWeek[0]) => {
+    setPendingConfirmation(item);
+    setConfirmationFormData({
+      dosage: '',
+      dosageUnit: 'ml',
+      administrationRoute: 'Intramuscular',
+      administeredBy: '',
+      administeredDate: new Date().toISOString().split('T')[0],
+      notes: ''
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  // Handle vaccination confirmation after user confirms
+  const handleConfirmVaccination = () => {
+    if (!pendingConfirmation) return;
+    
+    // Validate required fields
+    if (!confirmationFormData.dosage || !confirmationFormData.administeredBy) {
+      alert('Please fill in all required fields (Dosage and Administered By)');
+      return;
+    }
+    
+    // Calculate next due date based on treatment type
+    const nextDueDate = new Date();
+    let interval = '';
+    
+    if (pendingConfirmation.vaccine.toLowerCase().includes('vitamin')) {
+      nextDueDate.setDate(nextDueDate.getDate() + 14); // 2 weeks for vitamins
+      interval = '2 weeks';
+    } else if (pendingConfirmation.vaccine.toLowerCase().includes('deworming') || pendingConfirmation.vaccine.toLowerCase().includes('deworm')) {
+      nextDueDate.setMonth(nextDueDate.getMonth() + 3); // 3 months for deworming
+      interval = '3 months';
+    } else {
+      nextDueDate.setMonth(nextDueDate.getMonth() + 6); // 6 months for vaccines
+      interval = '6 months';
+    }
+    
+    setConfirmedVaccinations([...confirmedVaccinations, pendingConfirmation.livestockId]);
+    setConfirmedVaccinationDetails({
+      livestockId: pendingConfirmation.livestockId,
+      name: pendingConfirmation.name,
+      vaccine: pendingConfirmation.vaccine,
+      nextDueDate: nextDueDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      interval
+    });
+    
+    // Close confirmation modal and open reschedule modal
+    setIsConfirmModalOpen(false);
+    setPendingConfirmation(null);
+    setIsRescheduleModalOpen(true);
+    
+    // In a real app, this would save the treatment details to database
+    console.log('Confirmed vaccination for:', pendingConfirmation.livestockId);
+    console.log('Treatment details:', confirmationFormData);
+    console.log('Next due:', nextDueDate);
+  };
+
+  // Handle confirmation form input changes
+  const handleConfirmationInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setConfirmationFormData({
+      ...confirmationFormData,
+      [name]: value
+    });
+  };
   
   // Treatment types with medicines - organized by category (matches schema tables)
   const [treatmentVaccines, setTreatmentVaccines] = React.useState({
@@ -537,13 +633,136 @@ export default function Vaccination() {
       )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Vaccination Records */}
-        <div className="xl:col-span-2">
+        {/* Due This Week - Middle Priority (2 columns) */}
+        <div className="xl:col-span-2 space-y-4">
+          {/* Due This Week Section */}
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+            <div className="px-5 py-4 border-b border-amber-200 bg-amber-100">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-amber-900">Due This Week</h2>
+                <span className="inline-flex items-center px-2 py-1 bg-amber-200 text-amber-900 text-xs font-bold rounded-full">
+                  {dueThisWeek.filter(item => !confirmedVaccinations.includes(item.livestockId)).length} pending
+                </span>
+              </div>
+            </div>
+            <div className="p-4">
+              {dueThisWeek.length === 0 ? (
+                <div className="text-center py-8 text-amber-800">
+                  <CheckCircle size={48} className="mx-auto mb-3 text-amber-600" />
+                  <p className="text-base font-medium">All caught up!</p>
+                  <p className="text-sm mt-1">No vaccinations due this week</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {dueThisWeek.map((item, index) => {
+                    const isConfirmed = confirmedVaccinations.includes(item.livestockId);
+                    return (
+                      <div
+                        key={index}
+                        className={`p-4 rounded-lg border transition-all ${
+                          isConfirmed
+                            ? 'bg-emerald-50 border-emerald-200 opacity-60'
+                            : item.daysLeft === 0
+                            ? 'bg-red-50 border-red-300 shadow-md'
+                            : item.daysLeft <= 2
+                            ? 'bg-orange-50 border-orange-300'
+                            : 'bg-white border-amber-300'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <Link
+                            to={`/livestock/${item.livestockId}`}
+                            className="font-semibold text-primary-600 hover:text-primary-700"
+                          >
+                            {item.livestockId}
+                          </Link>
+                          {isConfirmed ? (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full">
+                              <CheckCircle size={10} className="mr-1" />
+                              Done
+                            </span>
+                          ) : item.daysLeft === 0 ? (
+                            <span className="inline-flex items-center px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+                              <AlertCircle size={10} className="mr-1" />
+                              Today!
+                            </span>
+                          ) : (
+                            <span className="text-xs font-medium text-amber-900 bg-amber-100 px-2 py-0.5 rounded-full">
+                              {item.daysLeft} day{item.daysLeft !== 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-600 mb-1">{item.name}</p>
+                        <p className="text-sm font-medium text-slate-900 mb-3">{item.vaccine}</p>
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                          <p className="text-xs text-slate-500">
+                            Due: {new Date(item.dueDate).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </p>
+                          {!isConfirmed && !isViewer && (
+                            <button
+                              onClick={() => handleConfirmClick(item)}
+                              className="text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded transition-colors"
+                            >
+                              ✓ Confirm
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* All Upcoming Schedule */}
+          <div className="bg-white rounded-lg border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-200">
+              <h2 className="text-lg font-semibold text-slate-900">All Upcoming Schedule</h2>
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {upcomingVaccinations.map((item, index) => (
+                  <div
+                    key={index}
+                    className="p-3 rounded-lg border bg-slate-50 border-slate-200"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <Link
+                        to={`/livestock/${item.livestockId}`}
+                        className="font-semibold text-primary-600 hover:text-primary-700 text-sm"
+                      >
+                        {item.livestockId}
+                      </Link>
+                      <span className="text-xs font-medium text-slate-600">
+                        {item.daysLeft} day{item.daysLeft !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 mb-1">{item.name}</p>
+                    <p className="text-xs font-medium text-slate-900">{item.vaccine}</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Due: {new Date(item.dueDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Treatment Records - Right Sidebar (1 column) */}
+        <div className="xl:col-span-1">
           <div className="bg-white rounded-lg border border-slate-200">
             <div className="px-5 py-4 border-b border-slate-200">
               <h2 className="text-lg font-semibold text-slate-900">Treatment Records</h2>
             </div>
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-slate-200 max-h-[800px] overflow-y-auto">
               {filteredRecords.map((record) => {
                 const isExpanded = expandedRecords.includes(record.vaccinationId);
                 
@@ -565,119 +784,95 @@ export default function Vaccination() {
                     className={`border-l-4 ${colors.border} transition-colors`}
                   >
                     <div 
-                      className={`p-5 cursor-pointer hover:${colors.bg} transition-colors`}
+                      className={`p-3 cursor-pointer hover:${colors.bg} transition-colors`}
                       onClick={() => toggleRecord(record.vaccinationId)}
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <ChevronDown 
-                              size={16} 
-                              className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                            />
-                            <Link
-                              to={`/livestock/${record.livestockId}`}
-                              className="font-semibold text-primary-600 hover:text-primary-700"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {record.livestockId}
-                            </Link>
-                            <span className="text-slate-600">•</span>
-                            <span className="text-sm text-slate-600">{record.livestockName}</span>
-                            <span className="inline-flex items-center px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-medium rounded-full">
-                              {record.species}
+                      <div className="mb-2">
+                        <div className="flex items-center space-x-1 mb-2">
+                          <ChevronDown 
+                            size={14} 
+                            className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                          />
+                          <Link
+                            to={`/livestock/${record.livestockId}`}
+                            className="font-semibold text-primary-600 hover:text-primary-700 text-sm"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {record.livestockId}
+                          </Link>
+                          {record.isInWithdrawal && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-orange-100 text-orange-800 text-xs font-bold rounded">
+                              🔒
                             </span>
-                            {record.isInWithdrawal && (
-                              <span className="inline-flex items-center px-2 py-0.5 bg-orange-100 text-orange-800 text-xs font-bold rounded-full">
-                                🔒 WITHDRAWAL
-                              </span>
-                            )}
+                          )}
+                        </div>
+                        
+                        <div className="ml-5 space-y-1">
+                          <div className="flex items-center text-xs text-slate-600">
+                            <Syringe size={12} className="mr-1" />
+                            <span className="font-medium">{record.treatmentName}</span>
                           </div>
-                          
-                          <div className="flex items-center space-x-4 text-sm ml-6">
-                            <div className="flex items-center text-slate-600">
-                              <Syringe size={14} className="mr-1" />
-                              <span className="font-medium">{record.treatmentName}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <span className={`text-xs px-2 py-0.5 rounded font-semibold ${colors.badge}`}>
-                                {record.treatmentType === 'Vaccine' && 'VACCINE'}
-                                {record.treatmentType === 'Antibiotics' && 'ANTIBIOTIC'}
-                                {record.treatmentType === 'Dewormer' && 'DEWORMER'}
-                                {record.treatmentType === 'Vitamins' && 'VITAMIN'}
-                                {record.treatmentType === 'Anti-Inflammatory' && 'ANTI-INFLAMMATORY'}
-                              </span>
-                            </div>
-                            <div className="flex items-center text-slate-500">
-                              <Calendar size={14} className="mr-1" />
+                          <div className="flex items-center justify-between">
+                            <span className={`text-xs px-1.5 py-0.5 rounded font-semibold ${colors.badge}`}>
+                              {record.treatmentType === 'Vaccine' && 'VACCINE'}
+                              {record.treatmentType === 'Antibiotics' && 'ANTIBIOTIC'}
+                              {record.treatmentType === 'Dewormer' && 'DEWORMER'}
+                              {record.treatmentType === 'Vitamins' && 'VITAMIN'}
+                              {record.treatmentType === 'Anti-Inflammatory' && 'ANTI-INFLAMMATORY'}
+                            </span>
+                            <span className="flex items-center text-xs text-slate-500">
+                              <Calendar size={10} className="mr-1" />
                               {new Date(record.dateAdministered).toLocaleDateString('en-US', { 
                                 month: 'short', 
-                                day: 'numeric', 
-                                year: 'numeric' 
+                                day: 'numeric'
                               })}
-                            </div>
+                            </span>
                           </div>
                         </div>
-
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          record.status === 'completed' 
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : record.status === 'due-soon'
-                            ? 'bg-amber-100 text-amber-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}>
-                          {record.status === 'completed' && <CheckCircle size={12} className="mr-1" />}
-                          {record.status === 'due-soon' && <Clock size={12} className="mr-1" />}
-                          {record.status === 'overdue' && <AlertCircle size={12} className="mr-1" />}
-                          {record.status.replace('-', ' ').toUpperCase()}
-                        </span>
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="px-5 pb-5 ml-6">
+                      <div className="px-3 pb-3 ml-5">
                         {record.isInWithdrawal && (
-                          <div className="mb-3 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-900">
-                            <strong>⚠️ Withdrawal Period:</strong> Cannot be sold/consumed until{' '}
-                            {new Date(record.withdrawalEndDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          <div className="mb-2 p-2 bg-orange-50 border border-orange-200 rounded text-xs text-orange-900">
+                            <strong>⚠️ Withdrawal:</strong> Until{' '}
+                            {new Date(record.withdrawalEndDate!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                          <div className="bg-slate-50 rounded-lg p-2">
+                        <div className="grid grid-cols-1 gap-2 mb-2">
+                          <div className="bg-slate-50 rounded p-2">
                             <p className="text-xs text-slate-500">Dosage</p>
-                            <p className="text-sm font-medium text-slate-900">{record.dosage} {record.dosageUnit}</p>
+                            <p className="text-xs font-medium text-slate-900">{record.dosage} {record.dosageUnit}</p>
                           </div>
-                          <div className="bg-slate-50 rounded-lg p-2">
-                            <p className="text-xs text-slate-500">Administration Route</p>
-                            <p className="text-sm font-medium text-slate-900">{record.administrationRoute}</p>
+                          <div className="bg-slate-50 rounded p-2">
+                            <p className="text-xs text-slate-500">Route</p>
+                            <p className="text-xs font-medium text-slate-900">{record.administrationRoute}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-xs mb-2">
-                          <div>
-                            {record.nextDueDate ? (
-                              <>
-                                <span className="text-slate-500">Next due: </span>
-                                <span className="font-medium text-slate-900">
-                                  {new Date(record.nextDueDate).toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric', 
-                                    year: 'numeric' 
-                                  })}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-slate-400">No booster required</span>
-                            )}
-                          </div>
-                          <div className="text-slate-500">
-                            By {record.administeredBy}
-                          </div>
+                        <div className="text-xs mb-1">
+                          {record.nextDueDate ? (
+                            <>
+                              <span className="text-slate-500">Next: </span>
+                              <span className="font-medium text-slate-900">
+                                {new Date(record.nextDueDate).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric'
+                                })}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-slate-400">No booster</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-slate-500">
+                          By {record.administeredBy}
                         </div>
 
                         {record.notes && (
-                          <div className="mt-3 pt-3 border-t border-slate-200">
+                          <div className="mt-2 pt-2 border-t border-slate-200">
                             <p className="text-xs text-slate-600">
                               <span className="font-medium">Notes:</span> {record.notes}
                             </p>
@@ -688,54 +883,6 @@ export default function Vaccination() {
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming Vaccinations Sidebar */}
-        <div className="xl:col-span-1">
-          <div className="bg-white rounded-lg border border-slate-200">
-            <div className="px-5 py-4 border-b border-slate-200">
-              <h2 className="text-lg font-semibold text-slate-900">Upcoming Schedule</h2>
-            </div>
-            <div className="p-4 space-y-3">
-              {upcomingVaccinations.map((item, index) => (
-                <div
-                  key={index}
-                  className={`p-3 rounded-lg border ${
-                    item.overdue 
-                      ? 'bg-red-50 border-red-200' 
-                      : 'bg-slate-50 border-slate-200'
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <Link
-                      to={`/livestock/${item.livestockId}`}
-                      className="font-semibold text-primary-600 hover:text-primary-700 text-sm"
-                    >
-                      {item.livestockId}
-                    </Link>
-                    {item.overdue ? (
-                      <span className="inline-flex items-center px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded-full">
-                        <AlertCircle size={10} className="mr-1" />
-                        Overdue
-                      </span>
-                    ) : (
-                      <span className="text-xs font-medium text-slate-600">
-                        {item.daysLeft} days
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-slate-600 mb-1">{item.name}</p>
-                  <p className="text-xs font-medium text-slate-900">{item.vaccine}</p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Due: {new Date(item.dueDate).toLocaleDateString('en-US', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    })}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -1269,6 +1416,241 @@ export default function Vaccination() {
                   <p>No livestock found matching "{livestockSearchQuery}"</p>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal - Ask before marking as administered */}
+      {isConfirmModalOpen && pendingConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] p-4">
+          <div className="bg-white rounded-lg w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              {/* Question Icon */}
+              <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                <AlertCircle size={32} className="text-amber-600" />
+              </div>
+
+              {/* Confirmation Message */}
+              <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">
+                Confirm Vaccination
+              </h3>
+              <p className="text-sm text-slate-600 mb-4 text-center">
+                Please provide treatment details to confirm administration
+              </p>
+
+              {/* Vaccination Details */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Livestock:</span>
+                    <span className="font-semibold text-slate-900">{pendingConfirmation.livestockId}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Name:</span>
+                    <span className="font-semibold text-slate-900">{pendingConfirmation.name}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Treatment:</span>
+                    <span className="font-semibold text-slate-900">{pendingConfirmation.vaccine}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Due Date:</span>
+                    <span className="font-semibold text-slate-900">
+                      {new Date(pendingConfirmation.dueDate).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Treatment Details Form */}
+              <div className="space-y-4 mb-6">
+                {/* Dosage */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Dosage <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      name="dosage"
+                      value={confirmationFormData.dosage}
+                      onChange={handleConfirmationInputChange}
+                      step="0.01"
+                      min="0"
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Enter dosage"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Unit <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="dosageUnit"
+                      value={confirmationFormData.dosageUnit}
+                      onChange={handleConfirmationInputChange}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      required
+                    >
+                      <option value="ml">ml</option>
+                      <option value="mg">mg</option>
+                      <option value="tablets">tablets</option>
+                      <option value="cc">cc</option>
+                      <option value="IU">IU</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Administration Route */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Administration Route <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="administrationRoute"
+                    value={confirmationFormData.administrationRoute}
+                    onChange={handleConfirmationInputChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    required
+                  >
+                    <option value="Intramuscular">Intramuscular (IM)</option>
+                    <option value="Subcutaneous">Subcutaneous (SC)</option>
+                    <option value="Oral">Oral</option>
+                    <option value="Topical">Topical</option>
+                    <option value="Intravenous">Intravenous (IV)</option>
+                  </select>
+                </div>
+
+                {/* Administered By */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Administered By <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="administeredBy"
+                    value={confirmationFormData.administeredBy}
+                    onChange={handleConfirmationInputChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder="Name of person who administered"
+                    required
+                  />
+                </div>
+
+                {/* Administered Date */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Administered Date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="administeredDate"
+                    value={confirmationFormData.administeredDate}
+                    onChange={handleConfirmationInputChange}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    required
+                  />
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Notes
+                  </label>
+                  <textarea
+                    name="notes"
+                    value={confirmationFormData.notes}
+                    onChange={handleConfirmationInputChange}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-none"
+                    placeholder="Additional observations or comments (optional)"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setIsConfirmModalOpen(false);
+                    setPendingConfirmation(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmVaccination}
+                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Confirm Administration
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Confirmation Modal */}
+      {isRescheduleModalOpen && confirmedVaccinationDetails && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70] p-4">
+          <div className="bg-white rounded-lg w-full max-w-md shadow-xl">
+            <div className="p-6 text-center">
+              {/* Success Icon */}
+              <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle size={32} className="text-emerald-600" />
+              </div>
+
+              {/* Success Message */}
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                Vaccination Confirmed!
+              </h3>
+              <p className="text-sm text-slate-600 mb-1">
+                Treatment for <span className="font-semibold text-slate-900">{confirmedVaccinationDetails.livestockId}</span> ({confirmedVaccinationDetails.name})
+              </p>
+              <p className="text-sm text-slate-600 mb-4">
+                <span className="font-semibold">{confirmedVaccinationDetails.vaccine}</span> has been completed
+              </p>
+
+              {/* Reschedule Information */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <Calendar size={20} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-semibold text-blue-900 mb-1">
+                      Automatically Rescheduled
+                    </h4>
+                    <p className="text-xs text-blue-800 mb-2">
+                      Based on the treatment type, the next dose has been scheduled for:
+                    </p>
+                    <p className="text-sm font-bold text-blue-900">
+                      {confirmedVaccinationDetails.nextDueDate}
+                    </p>
+                    <p className="text-xs text-blue-700 mt-1">
+                      ({confirmedVaccinationDetails.interval} from now)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <button
+                onClick={() => {
+                  setIsRescheduleModalOpen(false);
+                  setConfirmedVaccinationDetails(null);
+                }}
+                className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Got it!
+              </button>
             </div>
           </div>
         </div>

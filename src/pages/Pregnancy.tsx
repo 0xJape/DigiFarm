@@ -558,114 +558,93 @@ export default function Pregnancy() {
       {activeTab === 'pregnant' && (
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-slate-100 border-b-2 border-slate-300">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Dam Info
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Dam
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Sire Info
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Sire
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Breeding Date
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Due Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Expected Due
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Progress
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Stage
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Health
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Last Checkup
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Action
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="bg-white divide-y divide-slate-200">
               {filteredPregnancies.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-8 text-center text-sm text-slate-500">
-                    No pregnancy records found
+                  <td colSpan={7} className="px-5 py-12 text-center">
+                    <Heart size={48} className="mx-auto mb-3 text-slate-300" />
+                    <p className="text-base font-medium text-slate-600">No pregnancy records found</p>
+                    <p className="text-sm text-slate-500 mt-1">Try adjusting your filters</p>
                   </td>
                 </tr>
               ) : (
                 filteredPregnancies.map((pregnancy) => (
-                  <tr key={pregnancy.id} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <tr key={pregnancy.id} className="hover:bg-primary-50 transition-colors group">
+                    <td className="px-5 py-4">
                       <div>
-                        <div className="text-sm font-medium text-slate-900">{pregnancy.damId}</div>
-                        <div className="text-sm text-slate-600">{pregnancy.damName}</div>
-                        <div className="text-xs text-slate-500">{pregnancy.damBreed}</div>
+                        <div className="text-sm font-bold text-slate-900">{pregnancy.damId}</div>
+                        <div className="text-xs text-slate-600 mt-0.5">{pregnancy.damBreed}</div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-slate-900">{pregnancy.sireId}</div>
-                        <div className="text-sm text-slate-600">{pregnancy.sireName}</div>
-                      </div>
+                    <td className="px-5 py-4">
+                      <div className="text-sm font-semibold text-slate-900">{pregnancy.sireId}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-slate-900">
-                        {new Date(pregnancy.breedingDate).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
-                        })}
-                      </div>
-                      <div className="text-xs text-slate-500">{pregnancy.daysPregnant} days ago</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-slate-900">
+                    <td className="px-5 py-4">
+                      <div className="text-sm font-semibold text-slate-900">
                         {new Date(pregnancy.expectedDueDate).toLocaleDateString('en-US', {
                           month: 'short',
-                          day: 'numeric',
-                          year: 'numeric'
+                          day: 'numeric'
                         })}
                       </div>
+                      <div className="text-xs text-slate-600 mt-0.5">{pregnancy.daysPregnant} days</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-5 py-4">
                       <div className="flex items-center space-x-2">
-                        <div className="flex-1 bg-slate-200 rounded-full h-2 w-20">
+                        <div className="bg-slate-200 rounded-full h-2.5 w-20 shadow-inner">
                           <div
-                            className={`h-2 rounded-full ${
-                              pregnancy.gestationProgress >= 100 ? 'bg-red-500' : 'bg-primary-500'
+                            className={`h-2.5 rounded-full transition-all ${
+                              pregnancy.gestationProgress >= 100 ? 'bg-red-500 shadow-sm' : 'bg-primary-600 shadow-sm'
                             }`}
                             style={{ width: `${Math.min(pregnancy.gestationProgress, 100)}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm font-medium text-slate-700">
+                        <span className="text-sm font-bold text-slate-800 min-w-[40px]">
                           {pregnancy.gestationProgress}%
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(pregnancy.pregnancyStatus)}`}>
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-full shadow-sm ${getStatusColor(pregnancy.pregnancyStatus)}`}>
                         {pregnancy.pregnancyStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getHealthStatusColor(pregnancy.healthStatus)}`}>
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-full shadow-sm ${getHealthStatusColor(pregnancy.healthStatus)}`}>
                         {pregnancy.healthStatus}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-slate-600">{pregnancy.lastCheckup}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-5 py-4">
                       <Link
                         to={`/pregnancy/${pregnancy.id}`}
-                        className="inline-flex items-center space-x-1 text-primary-600 hover:text-primary-700"
+                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-primary-700 hover:text-primary-800 hover:bg-primary-100 rounded-lg transition-colors font-medium"
                       >
                         <Eye size={16} />
-                        <span className="text-sm">View Details</span>
+                        <span className="text-sm">View</span>
                       </Link>
                     </td>
                   </tr>
@@ -680,30 +659,30 @@ export default function Pregnancy() {
       {activeTab === 'newborn' && (
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+            <thead className="bg-slate-100 border-b-2 border-slate-300">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Livestock ID
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Species
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Sex
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Birth Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Birth Weight
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Weight
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Vigor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Dam
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <th className="px-5 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -726,56 +705,55 @@ export default function Pregnancy() {
                   }))
                 )
                 .map((newborn, index) => (
-                  <tr key={index} className="hover:bg-slate-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-mono font-semibold text-slate-900">{newborn.livestockId}</span>
+                  <tr key={index} className="hover:bg-emerald-50 transition-colors group">
+                    <td className="px-5 py-4">
+                      <span className="font-mono text-sm font-bold text-slate-900">{newborn.livestockId}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-slate-900">{newborn.species}</span>
+                    <td className="px-5 py-4">
+                      <span className="text-sm font-semibold text-slate-900">{newborn.species}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`text-sm font-medium ${
-                        newborn.sex === 'Male' ? 'text-blue-600' : 'text-pink-600'
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold shadow-sm ${
+                        newborn.sex === 'Male' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800'
                       }`}>
-                        {newborn.sex}
+                        {newborn.sex === 'Male' ? '♂' : '♀'} {newborn.sex}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                    <td className="px-5 py-4 text-sm font-semibold text-slate-900">
                       {newborn.birthDate && new Date(newborn.birthDate).toLocaleDateString('en-US', {
                         month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
+                        day: 'numeric'
                       })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                    <td className="px-5 py-4 text-sm font-bold text-slate-900">
                       {newborn.weight} kg
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        newborn.vigor === 'Strong' ? 'bg-emerald-100 text-emerald-700' :
-                        newborn.vigor === 'Moderate' ? 'bg-blue-100 text-blue-700' :
-                        newborn.vigor === 'Weak' ? 'bg-orange-100 text-orange-700' :
-                        'bg-red-100 text-red-700'
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-bold shadow-sm ${
+                        newborn.vigor === 'Strong' ? 'bg-emerald-100 text-emerald-800' :
+                        newborn.vigor === 'Moderate' ? 'bg-blue-100 text-blue-800' :
+                        newborn.vigor === 'Weak' ? 'bg-orange-100 text-orange-800' :
+                        'bg-red-100 text-red-800'
                       }`}>
                         {newborn.vigor || 'N/A'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm">
-                        <p className="font-medium text-slate-900">{newborn.damId}</p>
-                        <p className="text-slate-500">{newborn.damName}</p>
+                    <td className="px-5 py-4">
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm">{newborn.damId}</p>
+                        <p className="text-xs text-slate-600 mt-0.5">{newborn.damName}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-5 py-4">
                       <button
                         onClick={() => {
                           setSelectedNewborn(newborn);
                           setShowNewbornModal(true);
                         }}
-                        className="inline-flex items-center space-x-1 text-primary-600 hover:text-primary-700"
+                        className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-primary-700 hover:text-primary-800 hover:bg-primary-100 rounded-lg transition-colors font-medium"
                       >
                         <Eye size={16} />
-                        <span className="text-sm">View Profile</span>
+                        <span className="text-sm">View</span>
                       </button>
                     </td>
                   </tr>

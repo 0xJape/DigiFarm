@@ -511,22 +511,104 @@ export default function PregnancyDetail() {
 
         {/* Right Column - Checkup History */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Monthly Checkup History */}
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center">
-                <Stethoscope className="mr-2 text-emerald-600" size={20} />
-                Monthly Checkup History
-              </h3>
-              <span className="text-sm text-slate-600">
-                {pregnancy.checkupHistory.length} checkup{pregnancy.checkupHistory.length !== 1 ? 's' : ''} recorded
-              </span>
-            </div>
+          {/* Latest Checkup (Most Recent) */}
+          {pregnancy.checkupHistory.length > 0 && (() => {
+            const latestCheckup = pregnancy.checkupHistory[pregnancy.checkupHistory.length - 1];
+            return (
+              <div className="bg-gradient-to-br from-emerald-50 via-blue-50 to-emerald-50 rounded-lg border-2 border-emerald-300 p-6 shadow-lg">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center space-x-3">
+                    <div className="p-2 bg-emerald-100 rounded-lg">
+                      <Stethoscope className="text-emerald-700" size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900">Latest Checkup</h3>
+                      <p className="text-sm text-slate-600">Most recent examination</p>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 shadow-sm">
+                    CURRENT
+                  </span>
+                </div>
 
-            {pregnancy.checkupHistory.length > 0 ? (
+                <div className="bg-white rounded-lg p-5 border border-emerald-200 shadow-sm">
+                  {/* Checkup Header */}
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <p className="text-base font-bold text-slate-900">{latestCheckup.month}</p>
+                      <p className="text-sm text-slate-600">
+                        {new Date(latestCheckup.date).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-bold shadow-sm ${getHealthStatusColor(latestCheckup.healthStatus)}`}>
+                      {latestCheckup.healthStatus}
+                    </span>
+                  </div>
+
+                  {/* Vital Stats */}
+                  <div className="grid grid-cols-3 gap-4 mb-5 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg border border-slate-200">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-600">BCS</p>
+                      <p className="text-2xl font-bold text-slate-900">{latestCheckup.bcs}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-600">Weight</p>
+                      <p className="text-2xl font-bold text-slate-900">{latestCheckup.weight} kg</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-600">Veterinarian</p>
+                      <p className="text-sm font-bold text-slate-900">{latestCheckup.veterinarian}</p>
+                    </div>
+                  </div>
+
+                  {/* Findings */}
+                  <div className="mb-4">
+                    <p className="text-xs font-bold text-slate-700 mb-2">Findings:</p>
+                    <p className="text-sm text-slate-700 bg-slate-50 p-3 rounded border border-slate-200">{latestCheckup.findings}</p>
+                  </div>
+
+                  {/* Recommendations */}
+                  <div className="mb-4">
+                    <p className="text-xs font-bold text-slate-700 mb-2">Recommendations:</p>
+                    <p className="text-sm text-slate-700 bg-slate-50 p-3 rounded border border-slate-200">{latestCheckup.recommendations}</p>
+                  </div>
+
+                  {/* Next Checkup */}
+                  <div className="flex items-center space-x-2 text-sm text-blue-700 bg-blue-50 px-4 py-3 rounded-lg border border-blue-200 font-semibold">
+                    <Calendar size={16} />
+                    <span>
+                      Next checkup: {new Date(latestCheckup.nextCheckupDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Previous Checkups History */}
+          {pregnancy.checkupHistory.length > 1 && (
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center">
+                  <Activity className="mr-2 text-slate-600" size={20} />
+                  Previous Checkups
+                </h3>
+                <span className="text-sm text-slate-600">
+                  {pregnancy.checkupHistory.length - 1} previous checkup{pregnancy.checkupHistory.length - 1 !== 1 ? 's' : ''}
+                </span>
+              </div>
+
               <div className="space-y-4">
-                {pregnancy.checkupHistory.map((checkup, index) => (
-                  <div key={checkup.id} className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg p-5 border border-slate-200">
+                {pregnancy.checkupHistory.slice(0, -1).reverse().map((checkup, index) => (
+                  <div key={checkup.id} className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg p-5 border border-slate-200 hover:border-slate-300 transition-colors">
                     {/* Checkup Header */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -539,13 +621,13 @@ export default function PregnancyDetail() {
                           })}
                         </p>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${getHealthStatusColor(checkup.healthStatus)}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm ${getHealthStatusColor(checkup.healthStatus)}`}>
                         {checkup.healthStatus}
                       </span>
                     </div>
 
                     {/* Vital Stats */}
-                    <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-white rounded-lg">
+                    <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-white rounded-lg border border-slate-100">
                       <div>
                         <p className="text-xs text-slate-500">BCS</p>
                         <p className="text-lg font-bold text-slate-900">{checkup.bcs}</p>
@@ -586,14 +668,20 @@ export default function PregnancyDetail() {
                   </div>
                 ))}
               </div>
-            ) : (
+            </div>
+          )}
+
+          {/* No Checkups Message */}
+          {pregnancy.checkupHistory.length === 0 && (
+            <div className="bg-white rounded-lg border border-slate-200 p-6">
               <div className="text-center py-12 text-slate-500">
                 <Stethoscope size={48} className="mx-auto mb-4 text-slate-300" />
                 <p className="font-medium">No checkup records yet</p>
                 <p className="text-sm mt-1">Click "Add Checkup" to record the first monthly examination</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
 
           {/* Birth Record (if given birth) */}
           {pregnancy.birthStatus === 'Given Birth' && pregnancy.offspring && (
