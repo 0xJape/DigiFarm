@@ -43,6 +43,7 @@ export default function Livestock() {
   const { userRole } = useStore();
   const location = useLocation();
   const isViewer = userRole === 'viewer';
+  const canEdit = userRole === 'veterinarian' || userRole === 'farm_manager';
   
   const [searchQuery, setSearchQuery] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<string>('all');

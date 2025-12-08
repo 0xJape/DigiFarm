@@ -22,8 +22,10 @@ export default function Login() {
     
     if (email === 'viewer@digifarm.com') {
       setUserRole('viewer', email);
+    } else if (email.includes('veterinarian') || email.includes('vet')) {
+      setUserRole('veterinarian', email);
     } else if (email.includes('manager')) {
-      setUserRole('manager', email);
+      setUserRole('farm_manager', email);
     } else {
       setUserRole('admin', email);
     }
@@ -180,7 +182,7 @@ export default function Login() {
           <p className="text-center text-xs font-medium text-slate-500 uppercase tracking-wide">
             Quick Login
           </p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => {
@@ -193,11 +195,20 @@ export default function Login() {
             <button
               type="button"
               onClick={() => {
+                setFormData({ ...formData, email: 'veterinarian@digifarm.com', password: 'vet123' });
+              }}
+              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors"
+            >
+              🩺 Veterinarian
+            </button>
+            <button
+              type="button"
+              onClick={() => {
                 setFormData({ ...formData, email: 'manager@digifarm.com', password: 'manager123' });
               }}
               className="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors"
             >
-              👔 Manager
+              🧑‍🌾 Farm Aide
             </button>
             <button
               type="button"
@@ -206,7 +217,7 @@ export default function Login() {
               }}
               className="px-3 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors"
             >
-              👁️ Viewer
+              👨‍🏫 Faculty
             </button>
           </div>
         </div>

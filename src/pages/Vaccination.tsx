@@ -159,6 +159,7 @@ const dueThisWeek = upcomingVaccinations.filter(item => item.daysLeft <= 7);
 export default function Vaccination() {
   const { userRole } = useStore();
   const isViewer = userRole === 'viewer';
+  const canAddVaccination = userRole === 'veterinarian';
   
   const [searchParams] = useSearchParams();
   const livestockIdFromUrl = searchParams.get('livestockId');
@@ -524,6 +525,29 @@ export default function Vaccination() {
 
   return (
     <div className="space-y-6">
+      {/* Access Restriction Banner for Farm Managers */}
+      {userRole === 'farm_manager' && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-5 h-5 text-amber-600" />
+            <div>
+              <p className="text-sm font-semibold text-amber-900">Health Records - View Only Access</p>
+              <p className="text-xs text-amber-700 mt-0.5">Farm Managers can view health records but cannot add or modify vaccination records. Please contact a veterinarian for health-related activities.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View-Only Banner for Viewers */}
+      {isViewer && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="flex items-center space-x-2">
+            <Eye className="w-4 h-4 text-blue-600" />
+            <p className="text-xs font-medium text-blue-900">View-Only Mode - You can view vaccination data but cannot add or modify records</p>
+          </div>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className="bg-white rounded-lg border border-slate-200 p-5">

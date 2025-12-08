@@ -53,17 +53,17 @@ interface Livestock {
 interface StoreState {
   farms: Farm[];
   livestock: Livestock[];
-  userRole: 'admin' | 'manager' | 'viewer' | null;
+  userRole: 'admin' | 'veterinarian' | 'farm_manager' | 'viewer' | null;
   userEmail: string | null;
   addFarm: (farm: Farm) => void;
   addLivestock: (livestock: Livestock) => void;
-  setUserRole: (role: 'admin' | 'manager' | 'viewer', email: string) => void;
+  setUserRole: (role: 'admin' | 'veterinarian' | 'farm_manager' | 'viewer', email: string) => void;
   clearUser: () => void;
 }
 
 export const useStore = create<StoreState>((set) => ({
   farms: [],
-  userRole: (localStorage.getItem('userRole') as 'admin' | 'manager' | 'viewer' | null) || null,
+  userRole: (localStorage.getItem('userRole') as 'admin' | 'veterinarian' | 'farm_manager' | 'viewer' | null) || null,
   userEmail: localStorage.getItem('userEmail') || null,
   livestock: [
     // Sample Cattle

@@ -341,6 +341,7 @@ export default function BreedingOverview() {
 
   const { userRole } = useStore();
   const isViewer = userRole === 'viewer';
+  const canEdit = userRole === 'veterinarian' || userRole === 'farm_manager';
 
   return (
     <div className="space-y-6">

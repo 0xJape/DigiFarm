@@ -9,6 +9,7 @@ import {
   Users,
   Baby,
   LogOut,
+  Shield,
   type LucideIcon
 } from 'lucide-react';
 import { useStore } from '../store/useStore';
@@ -19,6 +20,8 @@ interface NavItem {
   path: string;
   icon: LucideIcon;
   badge?: number;
+  adminOnly?: boolean;
+  roles?: ('admin' | 'veterinarian' | 'farm_manager' | 'viewer')[];
 }
 
 interface NavSection {
@@ -26,22 +29,57 @@ interface NavSection {
   items: NavItem[];
 }
 
-const navSections: NavSection[] = [
+const veterinarianSections: NavSection[] = [
   {
     title: '',
     items: [
-      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71 },
-      { name: 'Health', path: '/vaccination', icon: Syringe, badge: 12 },
-      { name: 'Breeding', path: '/breeding', icon: Heart },
-      { name: 'Pregnancy', path: '/pregnancy', icon: Baby, badge: 1 },
-      { name: 'Reports', path: '/reports', icon: FileText },
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['veterinarian'] },
+      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['veterinarian'] },
+      { name: 'Health', path: '/vaccination', icon: Syringe, badge: 12, roles: ['veterinarian'] },
+      { name: 'Breeding', path: '/breeding', icon: Heart, roles: ['veterinarian'] },
+      { name: 'Pregnancy', path: '/pregnancy', icon: Baby, badge: 1, roles: ['veterinarian'] },
+      { name: 'Reports', path: '/reports', icon: FileText, roles: ['veterinarian'] },
+    ],
+  },
+];
+
+const farmManagerSections: NavSection[] = [
+  {
+    title: '',
+    items: [
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['farm_manager'] },
+      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['farm_manager'] },
+      { name: 'Breeding', path: '/breeding', icon: Heart, roles: ['farm_manager'] },
+      { name: 'Pregnancy', path: '/pregnancy', icon: Baby, badge: 1, roles: ['farm_manager'] },
+      { name: 'Reports', path: '/reports', icon: FileText, roles: ['farm_manager'] },
+    ],
+  },
+];
+
+const viewerSections: NavSection[] = [
+  {
+    title: '',
+    items: [
+      { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['viewer'] },
+      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['viewer'] },
+      { name: 'Reports', path: '/reports', icon: FileText, roles: ['viewer'] },
+    ],
+  },
+];
+
+const adminSections: NavSection[] = [
+  {
+    title: '',
+    items: [
+      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['admin'] },
     ],
   },
   {
     title: 'ADMINISTRATION',
     items: [
-      { name: 'Manage Users', path: '/manage-users', icon: Users },
+      { name: 'Manage Users', path: '/manage-users', icon: Users, adminOnly: true },
+      { name: 'Audit Log', path: '/audit-log', icon: Shield, adminOnly: true },
+      { name: 'Reports', path: '/reports', icon: FileText, adminOnly: true },
     ],
   },
 ];
@@ -109,7 +147,12 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-3 scrollbar-thin">
-        {navSections.map((section) => (
+        {(
+          userRole === 'admin' ? adminSections :
+          userRole === 'veterinarian' ? veterinarianSections :
+          userRole === 'farm_manager' ? farmManagerSections :
+          viewerSections
+        ).map((section) => (
           <div key={section.title} className="mb-2">
             {!collapsed && section.title && (
               <h3 className="px-3 mb-2 text-xs font-medium text-slate-400">
@@ -118,16 +161,13 @@ export default function Sidebar() {
             )}
             <ul className="space-y-0.5">
               {section.items.map((item) => {
-                // Hide Manage Users for managers and viewers
-                if (item.path === '/manage-users' && (userRole === 'manager' || userRole === 'viewer')) {
+                // Check role-based access
+                if (item.roles && !item.roles.includes(userRole as any)) {
                   return null;
                 }
                 
-                // For viewers, only show Dashboard, Livestock, and Reports
-                if (userRole === 'viewer' && 
-                    item.path !== '/dashboard' && 
-                    item.path !== '/livestock' && 
-                    item.path !== '/reports') {
+                // Admin-only items
+                if (item.adminOnly && userRole !== 'admin') {
                   return null;
                 }
                 

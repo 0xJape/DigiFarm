@@ -170,6 +170,7 @@ export default function LivestockProfile() {
   const { id } = useParams<{ id: string }>();
   const { userRole, livestock } = useStore();
   const isViewer = userRole === 'viewer';
+  const canEdit = userRole === 'veterinarian' || userRole === 'farm_manager';
   const animal = mockAnimalData[id as keyof typeof mockAnimalData];
   const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);

@@ -15,6 +15,7 @@ import Reports from './pages/Reports';
 import ManageUsers from './pages/ManageUsers';
 import Pregnancy from './pages/Pregnancy';
 import PregnancyDetail from './pages/PregnancyDetail';
+import AuditLog from './pages/AuditLog';
 import Sidebar from './components/Sidebar';
 import { useStore } from './store/useStore';
 
@@ -325,6 +326,7 @@ export default function App() {
             <Route path="/pregnancy/:id" element={<PregnancyDetail />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/manage-users" element={<ManageUsers />} />
+            <Route path="/audit-log" element={<AuditLog />} />
           </Routes>
         </div>
       </main>
