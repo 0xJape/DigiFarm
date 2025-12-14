@@ -318,9 +318,8 @@ export default function BreedingOverview() {
     const matchesSearch = breeding.damId.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          breeding.sireId.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          breeding.damBreed.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesSpecies = speciesFilter === 'all' || breeding.damBreed.toLowerCase().includes(speciesFilter);
     
-    return matchesSearch && matchesSpecies;
+    return matchesSearch;
   });
 
   const totalBreedings = recentBreedings.length;
