@@ -247,11 +247,11 @@ export default function Dashboard() {
     },
     {
       action: 'edited',
-      description: 'Updated weight record for goat G-015 (45.2kg → 47.8kg)',
+      description: 'Updated weight record for cattle C-015 (545.2kg → 547.8kg)',
       user: 'Marlo Gel Alkuino',
       timestamp: '2 hours ago',
       entityType: 'livestock',
-      entityId: 'G-015'
+      entityId: 'C-015'
     },
     {
       action: 'vaccination',
@@ -270,27 +270,11 @@ export default function Dashboard() {
     },
     {
       action: 'edited',
-      description: 'Changed livestock S-012 status to "Sold"',
-      user: 'Jalel Prince Gayo',
-      timestamp: '6 hours ago',
-      entityType: 'livestock',
-      entityId: 'S-012'
-    },
-    {
-      action: 'edited',
       description: 'Updated pregnancy status for cattle C-011 to "Pregnant"',
       user: 'Marlo Gel Alkuino',
       timestamp: '8 hours ago',
       entityType: 'breeding',
       entityId: 'C-011'
-    },
-    {
-      action: 'added',
-      description: 'New sheep added to flock - ID: S-017',
-      user: 'Kyle Stephen Silaya',
-      timestamp: '10 hours ago',
-      entityType: 'livestock',
-      entityId: 'S-017'
     },
     {
       action: 'edited',
@@ -324,7 +308,7 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
-          title="Total Animals"
+          title="Total Cattle"
           value="67"
           change="10.2%"
           changeType="positive"
@@ -332,7 +316,7 @@ export default function Dashboard() {
           iconBg="bg-primary-50"  
         />
         <StatCard
-          title="Healthy Animals"
+          title="Healthy Cattle"
           value="60"
           change="1.8%"
           changeType="positive"
@@ -372,7 +356,7 @@ export default function Dashboard() {
                 className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-700 text-white text-sm font-bold rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all shadow-md hover:shadow-lg"
               >
                 <Plus size={18} />
-                <span>Add Animal</span>
+                <span>Add Cattle</span>
               </Link>
               <Link
                 to="/vaccination"
@@ -393,93 +377,62 @@ export default function Dashboard() {
                 className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-white border-2 border-slate-200 text-slate-700 text-sm font-bold rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-all"
               >
                 <Beef size={18} />
-                <span>Browse Livestock</span>
+                <span>View Cattle Herd</span>
               </Link>
             </div>
           </div>
 
-          {/* Livestock Distribution Chart */}
+          {/* Cattle Distribution Chart */}
           <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg border border-slate-200 shadow-sm">
             <div className="px-4 py-3 border-b border-slate-200 bg-white/70 backdrop-blur-sm">
-              <h3 className="text-sm font-bold text-slate-900">Livestock Distribution</h3>
+              <h3 className="text-sm font-bold text-slate-900">Cattle Distribution</h3>
             </div>
             <div className="p-4">
-              {/* Pie Chart */}
+              {/* Circular Chart */}
               <div className="flex flex-col items-center mb-4">
-                <svg viewBox="0 0 200 200" className="w-32 h-32 drop-shadow-md mb-2">
-                  {/* Cattle - 37% - Blue */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#3b82f6"
-                    strokeWidth="40"
-                    strokeDasharray="186 314"
-                    strokeDashoffset="85"
-                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3))' }}
-                  />
-                  {/* Goats - 39% - Orange */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#f97316"
-                    strokeWidth="40"
-                    strokeDasharray="195 305"
-                    strokeDashoffset="-101"
-                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(249, 115, 22, 0.3))' }}
-                  />
-                  {/* Sheep - 24% - Purple */}
-                  <circle
-                    cx="100"
-                    cy="100"
-                    r="80"
-                    fill="none"
-                    stroke="#8b5cf6"
-                    strokeWidth="40"
-                    strokeDasharray="120 380"
-                    strokeDashoffset="-296"
-                    className="transition-all duration-300 hover:opacity-80 cursor-pointer"
-                    style={{ filter: 'drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3))' }}
-                  />
-                  {/* Center circle for donut effect */}
-                  <circle cx="100" cy="100" r="60" fill="white" />
-                  {/* Center number */}
-                  <text x="100" y="110" textAnchor="middle" className="text-2xl fill-slate-900 font-bold">
-                    67
-                  </text>
-                </svg>
-                <p className="text-xs text-slate-500 font-medium">Total Animals</p>
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center drop-shadow-md mb-2">
+                  <div className="w-24 h-24 rounded-full bg-white flex flex-col items-center justify-center">
+                    <div className="text-2xl font-bold text-slate-900">25</div>
+                    <div className="text-xs text-slate-500">Total</div>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">Total Cattle</p>
               </div>
 
-              {/* Legend with Cards */}
+              {/* Category Breakdown */}
               <div className="space-y-2">
                 <div className="bg-white rounded-lg p-2.5 border border-blue-100 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
-                      <span className="text-xs font-medium text-slate-600">Cattle</span>
+                      <span className="text-xs font-medium text-slate-600">Bulls</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900">25</div>
-                      <div className="text-xs text-slate-500">37%</div>
+                      <div className="text-lg font-bold text-slate-900">3</div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="bg-white rounded-lg p-2.5 border border-orange-100 hover:shadow-md transition-shadow">
+                <div className="bg-white rounded-lg p-2.5 border border-emerald-100 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
-                      <span className="text-xs font-medium text-slate-600">Goats</span>
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                      <span className="text-xs font-medium text-slate-600">Cows</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900">26</div>
-                      <div className="text-xs text-slate-500">39%</div>
+                      <div className="text-lg font-bold text-slate-900">11</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-lg p-2.5 border border-amber-100 hover:shadow-md transition-shadow">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                      <span className="text-xs font-medium text-slate-600">Heifers</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-slate-900">8</div>
                     </div>
                   </div>
                 </div>
@@ -488,11 +441,10 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
-                      <span className="text-xs font-medium text-slate-600">Sheep</span>
+                      <span className="text-xs font-medium text-slate-600">Calves</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-bold text-slate-900">16</div>
-                      <div className="text-xs text-slate-500">24%</div>
+                      <div className="text-lg font-bold text-slate-900">3</div>
                     </div>
                   </div>
                 </div>
@@ -549,15 +501,15 @@ export default function Dashboard() {
               </Link>
               <AlertItem
                 type="warning"
-                message="Rabies vaccine overdue for Boer Doe G-012"
-                timestamp="Overdue"
-                animalId="G-012"
+                message="Antibiotic withdrawal period ends for Brahman Bull C-007 on Dec 20"
+                timestamp="2 days"
+                animalId="C-007"
               />
               <AlertItem
-                type="info"
-                message="CDT vaccine due for Dorper Ewe S-005 on Dec 8"
-                timestamp="16 days"
-                animalId="S-005"
+                type="critical"
+                message="FMD vaccine overdue for Angus Cow C-019"
+                timestamp="3 days overdue"
+                animalId="C-019"
               />
               <AlertItem
                 type="success"
@@ -672,7 +624,7 @@ export default function Dashboard() {
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-2 mb-1">
                   <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-xs font-medium text-slate-600">Total Animals</span>
+                  <span className="text-xs font-medium text-slate-600">Total Cattle</span>
                 </div>
                 <p className="text-2xl font-bold text-slate-900">67</p>
                 <p className="text-xs text-emerald-600 font-medium mt-1">↑ 10.2% growth</p>

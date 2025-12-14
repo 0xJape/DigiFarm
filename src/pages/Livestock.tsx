@@ -6,7 +6,7 @@ import { useStore } from '../store/useStore';
 interface LivestockItem {
   id: string;
   tag: string;
-  species: 'Cattle' | 'Goat' | 'Sheep';
+  species: 'Cattle';
   breed: string;
   category: string;
   sex: 'Male' | 'Female';
@@ -14,29 +14,21 @@ interface LivestockItem {
   status: 'Healthy' | 'Monitor' | 'Sick';
 }
 
-// Sample data matching farm inventory (showing 10 animals from 67 total)
+// Sample cattle data (showing some from total cattle herd)
 const mockLivestock: LivestockItem[] = [
-  // Cattle samples (from 25 total: 2 bulls, 1 yearling bull, 11 cows, 8 heifers, 3 calves)
+  // Cattle samples (bulls, cows, heifers, calves)
   { id: 'C-001', tag: 'C-001', species: 'Cattle', breed: 'Brahman', category: 'Bull', sex: 'Male', age: '4y 2m', status: 'Healthy' },
   { id: 'C-015', tag: 'C-015', species: 'Cattle', breed: 'Brahman', category: 'Cow', sex: 'Female', age: '5y 8m', status: 'Healthy' },
   { id: 'C-023', tag: 'C-023', species: 'Cattle', breed: 'Brahman', category: 'Heifer', sex: 'Female', age: '2y 3m', status: 'Monitor' },
-  
-  // Goat samples (from 26 total: 1 buck, 11 does, 11 maiden does, 3 kids)
-  { id: 'G-001', tag: 'G-001', species: 'Goat', breed: 'Anglo-Nubian', category: 'Buck', sex: 'Male', age: '3y 1m', status: 'Healthy' },
-  { id: 'G-008', tag: 'G-008', species: 'Goat', breed: 'Anglo-Nubian', category: 'Doe', sex: 'Female', age: '2y 7m', status: 'Healthy' },
-  { id: 'G-019', tag: 'G-019', species: 'Goat', breed: 'Native/Philippine Native', category: 'Maiden Doe', sex: 'Female', age: '1y 4m', status: 'Healthy' },
-  { id: 'G-025', tag: 'G-025', species: 'Goat', breed: 'Crossbreed', category: 'Kid', sex: 'Female', age: '0y 5m', status: 'Healthy' },
-  
-  // Sheep samples (from 16 total: 1 ram, 8 ewes, 3 maiden ewes, 4 lambs)
-  { id: 'S-001', tag: 'S-001', species: 'Sheep', breed: 'Barbados Blackbelly', category: 'Ram', sex: 'Male', age: '4y 0m', status: 'Healthy' },
-  { id: 'S-005', tag: 'S-005', species: 'Sheep', breed: 'Native/Philippine Native', category: 'Ewe', sex: 'Female', age: '3y 2m', status: 'Sick' },
-  { id: 'S-013', tag: 'S-013', species: 'Sheep', breed: 'Crossbreed', category: 'Lamb', sex: 'Male', age: '0y 6m', status: 'Healthy' },
+  { id: 'C-007', tag: 'C-007', species: 'Cattle', breed: 'Angus', category: 'Bull', sex: 'Male', age: '3y 6m', status: 'Healthy' },
+  { id: 'C-012', tag: 'C-012', species: 'Cattle', breed: 'Holstein', category: 'Cow', sex: 'Female', age: '4y 1m', status: 'Healthy' },
+  { id: 'C-019', tag: 'C-019', species: 'Cattle', breed: 'Native/Carabao', category: 'Heifer', sex: 'Female', age: '1y 9m', status: 'Healthy' },
+  { id: 'C-004', tag: 'C-004', species: 'Cattle', breed: 'Crossbreed', category: 'Yearling Bull', sex: 'Male', age: '1y 6m', status: 'Healthy' },
 
-  // Newborn livestock from recent births
+  // Newborn cattle from recent births
   { id: 'LS-31', tag: 'LS-31', species: 'Cattle', breed: 'Brahman', category: 'Calf', sex: 'Male', age: '0y 0m (10 days)', status: 'Healthy' },
-  { id: 'LS-41', tag: 'LS-41', species: 'Goat', breed: 'Anglo-Nubian x Boer', category: 'Kid', sex: 'Female', age: '0y 0m (5 days)', status: 'Healthy' },
-  { id: 'LS-42', tag: 'LS-42', species: 'Goat', breed: 'Anglo-Nubian x Boer', category: 'Kid', sex: 'Male', age: '0y 0m (5 days)', status: 'Monitor' },
-  { id: 'LS-51', tag: 'LS-51', species: 'Sheep', breed: 'Native x Barbados Blackbelly', category: 'Lamb', sex: 'Female', age: '0y 0m (15 days)', status: 'Monitor' },
+  { id: 'LS-32', tag: 'LS-32', species: 'Cattle', breed: 'Angus', category: 'Calf', sex: 'Female', age: '0y 0m (5 days)', status: 'Monitor' },
+  { id: 'LS-33', tag: 'LS-33', species: 'Cattle', breed: 'Crossbreed', category: 'Calf', sex: 'Female', age: '0y 0m (15 days)', status: 'Healthy' },
 ];
 
 export default function Livestock() {
@@ -64,19 +56,18 @@ export default function Livestock() {
   const filteredLivestock = mockLivestock.filter(animal => {
     const matchesSearch = animal.tag.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          animal.breed.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         animal.species.toLowerCase().includes(searchQuery.toLowerCase());
+                         animal.category.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || animal.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchesSpecies = speciesFilter === 'all' || animal.species === speciesFilter;
     const matchesSex = sexFilter === 'all' || animal.sex === sexFilter;
     
     // Category filter for newborns
     const matchesCategory = categoryFilter === 'all' || 
-      (categoryFilter === 'newborn' && ['Calf', 'Kid', 'Lamb'].includes(animal.category));
+      (categoryFilter === 'newborn' && animal.category === 'Calf');
     
-    return matchesSearch && matchesStatus && matchesSpecies && matchesSex && matchesCategory;
+    return matchesSearch && matchesStatus && matchesSex && matchesCategory;
   });
 
-  const activeFiltersCount = [statusFilter, speciesFilter, sexFilter, categoryFilter].filter(f => f !== 'all').length;
+  const activeFiltersCount = [statusFilter, sexFilter, categoryFilter].filter(f => f !== 'all').length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -115,7 +106,7 @@ export default function Livestock() {
           <div className="relative">
             <input
               type="search"
-              placeholder="Search by ID, breed, species..."
+              placeholder="Search by ID, breed, category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-80 pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
@@ -148,7 +139,7 @@ export default function Livestock() {
             className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
           >
             <Plus size={16} />
-            <span>Add Animal</span>
+            <span>Add Cattle</span>
           </Link>
         )}
       </div>
@@ -170,22 +161,7 @@ export default function Livestock() {
               <span>Clear All</span>
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Species Filter */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Species</label>
-              <select
-                value={speciesFilter}
-                onChange={(e) => setSpeciesFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="all">All Species</option>
-                <option value="Cattle">Cattle (25)</option>
-                <option value="Goat">Goat (26)</option>
-                <option value="Sheep">Sheep (16)</option>
-              </select>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Sex Filter */}
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Sex</label>
@@ -195,8 +171,8 @@ export default function Livestock() {
                 className="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="all">All</option>
-                <option value="Male">Male (5)</option>
-                <option value="Female">Female (62)</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
               </select>
             </div>
 
@@ -242,7 +218,7 @@ export default function Livestock() {
             <Beef size={16} className="text-slate-400" />
           </div>
           <p className="text-2xl font-semibold text-slate-900">71</p>
-          <p className="text-xs text-slate-500 mt-1">26 Cattle, 28 Goats, 17 Sheep</p>
+          <p className="text-xs text-slate-500 mt-1">25 Cattle Total</p>
         </div>
         <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
           <div className="flex items-center justify-between mb-1">

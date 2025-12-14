@@ -16,28 +16,15 @@ export default function AddLivestock() {
   const [calculatedCategory, setCalculatedCategory] = React.useState<string>('');
   const [showParentDetails, setShowParentDetails] = React.useState(true); // Toggle for parent details
 
-  // Function to generate unique livestock ID based on species
-  const generateLivestockId = (species: string): string => {
-    let prefix = '';
-    switch (species) {
-      case 'Cattle':
-        prefix = 'C';
-        break;
-      case 'Goat':
-        prefix = 'G';
-        break;
-      case 'Sheep':
-        prefix = 'S';
-        break;
-      default:
-        prefix = 'L'; // Fallback to 'L' for Livestock
-    }
+  // Function to generate unique cattle ID
+  const generateLivestockId = (): string => {
+    const prefix = 'C';
 
-    // Find the highest existing number for this species
+    // Find the highest existing number for cattle
     const existingIds = livestock
       .filter(animal => animal.livestockId && animal.livestockId.startsWith(prefix + '-'))
       .map(animal => {
-        const match = animal.livestockId.match(/^[A-Z]-(\d+)$/);
+        const match = animal.livestockId.match(/^[A-Z]-(\ d+)$/); 
         return match ? parseInt(match[1], 10) : 0;
       });
 
@@ -48,29 +35,18 @@ export default function AddLivestock() {
     return `${prefix}-${String(nextNumber).padStart(3, '0')}`;
   };
   
-  // Breed data - Common Philippine breeds organized by species
-  const [breedsBySpecies, setBreedsBySpecies] = React.useState({
-    Cattle: [
-      'Brahman',
-      'Native/Carabao',
-      'Crossbreed'
-    ],
-    Goat: [
-      'Anglo-Nubian',
-      'Native/Philippine Native',
-      'Crossbreed'
-    ],
-    Sheep: [
-      'Barbados Blackbelly',
-      'Native/Philippine Native',
-      'Crossbreed'
-    ]
-  });
+  // Breed data - Common cattle breeds in the Philippines
+  const [cattleBreeds, setCattleBreeds] = React.useState([
+    'Brahman',
+    'Angus',
+    'Holstein',
+    'Native/Carabao',
+    'Crossbreed'
+  ]);
 
   const [formData, setFormData] = React.useState({
     // Basic Registration Information
-    livestockId: '',
-    species: '',
+    livestockId: generateLivestockId(),
     breed: '',
     category: '',
     sex: '',
@@ -105,12 +81,11 @@ export default function AddLivestock() {
     treatmentVaccines: '' // Vaccines given during treatment if sick
   });
 
-  // Auto-calculate category when species, gender, birthdate, or hasBred changes
+  // Auto-calculate category when gender, birthdate, or hasBred changes
   React.useEffect(() => {
-    if (formData.species && formData.sex && formData.dateOfBirth) {
+    if (formData.sex && formData.dateOfBirth) {
       const ageInMonths = calculateAgeInMonths(formData.dateOfBirth);
       const category = getCategory(
-        formData.species as 'Cattle' | 'Goat' | 'Sheep',
         formData.sex as 'Male' | 'Female',
         ageInMonths,
         hasBred,
@@ -119,28 +94,14 @@ export default function AddLivestock() {
       setCalculatedCategory(category);
       setFormData(prev => ({ ...prev, category }));
     }
-  }, [formData.species, formData.sex, formData.dateOfBirth, hasBred, isNewborn]);
+  }, [formData.sex, formData.dateOfBirth, hasBred, isNewborn]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
-    // Reset breed and auto-generate ID when species changes
-    if (name === 'species') {
-      const newLivestockId = generateLivestockId(value);
-      setFormData({
-        ...formData,
-        [name]: value,
-        livestockId: newLivestockId, // Auto-generate ID based on species
-        breed: '', // Clear breed selection when species changes
-        damId: '', // Clear dam/sire when species changes
-        sireId: ''
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: value
+    });
   };
 
   const handleNewbornToggle = () => {
@@ -166,11 +127,8 @@ export default function AddLivestock() {
   };
 
   const handleAddNewBreed = () => {
-    if (newBreedName.trim() && formData.species) {
-      setBreedsBySpecies({
-        ...breedsBySpecies,
-        [formData.species]: [...breedsBySpecies[formData.species as keyof typeof breedsBySpecies], newBreedName.trim()]
-      });
+    if (newBreedName.trim()) {
+      setCattleBreeds([...cattleBreeds, newBreedName.trim()]);
       setFormData({
         ...formData,
         breed: newBreedName.trim()
@@ -180,8 +138,8 @@ export default function AddLivestock() {
     }
   };
 
-  // Get available breeds based on selected species
-  const availableBreeds = formData.species ? breedsBySpecies[formData.species as keyof typeof breedsBySpecies] || [] : [];
+  // Get available breeds for cattle
+  const availableBreeds = cattleBreeds;
 
   const handlePurchaseToggle = () => {
     setIsPurchased(!isPurchased);
@@ -198,7 +156,7 @@ export default function AddLivestock() {
     const newLivestock = {
       id: Date.now().toString(),
       livestockId: formData.livestockId,
-      species: formData.species as 'Cattle' | 'Goat' | 'Sheep',
+      species: 'Cattle' as const,
       breed: formData.breed,
       category: formData.category as any, // Category union type
       sex: formData.sex as 'Male' | 'Female',
@@ -251,7 +209,7 @@ export default function AddLivestock() {
             <ArrowLeft size={20} className="text-slate-600" />
           </Link>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Add New Livestock</h1>
+            <h1 className="text-2xl font-semibold text-slate-900">Add New Cattle</h1>
             <p className="text-sm text-slate-600 mt-1">Enter the details of the new animal</p>
           </div>
         </div>
@@ -263,54 +221,31 @@ export default function AddLivestock() {
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
             <h2 className="text-lg font-semibold text-slate-900">Basic Information</h2>
-            <p className="text-xs text-slate-600 mt-0.5">Essential details for livestock registration</p>
+            <p className="text-xs text-slate-600 mt-0.5">Essential details for cattle registration</p>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Livestock ID <span className="text-red-500">*</span>
+                  Cattle ID <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="livestockId"
                   value={formData.livestockId}
                   readOnly
-                  placeholder="Select species to generate ID"
                   required
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-600 cursor-not-allowed focus:outline-none"
-                  title="Livestock ID is auto-generated based on species (C-### for Cattle, G-### for Goat, S-### for Sheep)"
+                  title="Cattle ID is auto-generated (C-001, C-002, etc.)"
                 />
-                <p className="text-xs text-slate-500 mt-1">Auto-generated based on species</p>
+                <p className="text-xs text-slate-500 mt-1">Auto-generated (C-001, C-002, etc.)</p>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
-                Species <span className="text-red-500">*</span>
-              </label>
-              <select
-                name="species"
-                value={formData.species}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="">Select species</option>
-                <option value="Cattle">Cattle</option>
-                <option value="Goat">Goat</option>
-                <option value="Sheep">Sheep</option>
-              </select>
-            </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
                 Breed <span className="text-red-500">*</span>
               </label>
-              {!formData.species ? (
-                <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-400 text-sm">
-                  Please select a species first
-                </div>
-              ) : !showAddBreed ? (
+              {!showAddBreed ? (
                 <div className="flex space-x-2">
                   <select
                     name="breed"
@@ -415,12 +350,11 @@ export default function AddLivestock() {
                     value={formData.damId}
                     onChange={handleInputChange}
                     required
-                    disabled={!formData.species}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-slate-50 disabled:text-slate-400"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
-                    <option value="">{formData.species ? 'Select mother' : 'Select species first'}</option>
+                    <option value="">Select mother</option>
                     {livestock
-                      .filter(l => l.species === formData.species && l.sex === 'Female' && l.status === 'Active')
+                      .filter(l => l.species === 'Cattle' && l.sex === 'Female' && l.status === 'Active')
                       .map(l => (
                         <option key={l.id} value={l.id}>
                           {l.livestockId} - {l.breed} ({l.category})
@@ -439,12 +373,11 @@ export default function AddLivestock() {
                     value={formData.sireId}
                     onChange={handleInputChange}
                     required
-                    disabled={!formData.species}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-slate-50 disabled:text-slate-400"
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
-                    <option value="">{formData.species ? 'Select father' : 'Select species first'}</option>
+                    <option value="">Select father</option>
                     {livestock
-                      .filter(l => l.species === formData.species && l.sex === 'Male' && l.status === 'Active')
+                      .filter(l => l.species === 'Cattle' && l.sex === 'Male' && l.status === 'Active')
                       .map(l => (
                         <option key={l.id} value={l.id}>
                           {l.livestockId} - {l.breed} ({l.category})
@@ -559,7 +492,7 @@ export default function AddLivestock() {
                 </div>
 
                 {/* Has Bred (for females only) */}
-                {formData.sex === 'Female' && formData.species && (
+                {formData.sex === 'Female' && (
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Breeding History
@@ -572,7 +505,7 @@ export default function AddLivestock() {
                         className="w-4 h-4 text-primary-600 border-slate-300 rounded focus:ring-2 focus:ring-primary-500"
                       />
                       <span className="text-sm text-slate-700">
-                        Has bred before (determines Maiden vs {formData.species === 'Goat' ? 'Doe' : formData.species === 'Sheep' ? 'Ewe' : 'Cow'})
+                        Has bred before (determines Heifer vs Cow)
                       </span>
                     </label>
                   </div>
@@ -667,13 +600,13 @@ export default function AddLivestock() {
                         </svg>
                       </div>
                       <p className="text-xs text-emerald-700">
-                        Based on {formData.species} • {formData.sex} • {isNewborn ? 'Newborn' : `${calculateAgeInMonths(formData.dateOfBirth)} months old`}{formData.sex === 'Female' && !isNewborn ? ` • ${hasBred ? 'Has bred' : 'Never bred'}` : ''}
+                        Based on Cattle • {formData.sex} • {isNewborn ? 'Newborn' : `${calculateAgeInMonths(formData.dateOfBirth)} months old`}{formData.sex === 'Female' && !isNewborn ? ` • ${hasBred ? 'Has bred' : 'Never bred'}` : ''}
                       </p>
                     </div>
                   ) : (
                     <div className="px-4 py-3 border-2 border-slate-200 bg-slate-50 rounded-lg">
                       <p className="text-sm text-slate-500 italic">
-                        Category will be calculated automatically when you fill in Species, Sex, and Birth Date
+                        Category will be calculated automatically when you fill in Sex and Birth Date
                       </p>
                     </div>
                   )}

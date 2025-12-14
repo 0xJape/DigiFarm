@@ -46,7 +46,7 @@ export default function Home() {
             College of Agriculture Animal Science Farm
           </p>
           <p className="text-sm text-slate-500 max-w-3xl mx-auto mb-10">
-            A digital platform for recording, monitoring, and organizing livestock health, breeding, and farm management data for cattle, goats, and sheep at MSU-GenSan.
+            A digital platform for recording, monitoring, and organizing cattle health, breeding, and farm management data at MSU-GenSan.
           </p>
           <div className="flex items-center justify-center">
             <Link
@@ -69,7 +69,7 @@ export default function Home() {
             </div>
             <h3 className="text-base font-semibold text-slate-900 mb-2">Livestock Information Management</h3>
             <p className="text-sm text-slate-600">
-              Record and update livestock identification details including species, breed, sex, age, origin, and health status for cattle, goats, and sheep.
+              Record and update cattle identification details including breed, sex, age, origin, and health status.
             </p>
           </div>
 
@@ -104,14 +104,6 @@ export default function Home() {
             <div className="text-center">
               <p className="text-3xl font-semibold text-primary-700 mb-1">25</p>
               <p className="text-sm text-slate-600">Cattle</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-semibold text-emerald-600 mb-1">26</p>
-              <p className="text-sm text-slate-600">Goats</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-semibold text-teal-600 mb-1">16</p>
-              <p className="text-sm text-slate-600">Sheep</p>
             </div>
           </div>
         </div>

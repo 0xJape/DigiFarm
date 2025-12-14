@@ -44,17 +44,17 @@ const mockAlerts = [
   {
     id: 3,
     type: 'warning' as const,
-    message: 'Rabies vaccine overdue for Boer Doe G-012',
+    message: 'FMD vaccine overdue for Brahman Heifer C-012',
     timestamp: 'Overdue',
-    animalId: 'G-012',
+    animalId: 'C-012',
     linkTo: '/vaccination'
   },
   {
     id: 4,
     type: 'info' as const,
-    message: 'CDT vaccine due for Dorper Ewe S-005 on Dec 8',
+    message: 'FMD vaccine due for Holstein Cow C-005 on Dec 8',
     timestamp: '16 days',
-    animalId: 'S-005',
+    animalId: 'C-005',
     linkTo: '/vaccination'
   },
   {
@@ -186,7 +186,7 @@ export default function App() {
                               >
                                 <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
                                   <span className="text-sm font-bold text-primary-700">
-                                    {animal.species === 'Cattle' ? '🐄' : animal.species === 'Goat' ? '🐐' : '🐑'}
+                                    🐄
                                   </span>
                                 </div>
                                 <div className="flex-1 min-w-0">

@@ -19,8 +19,8 @@ export default function Header() {
       id: 2,
       type: 'warning',
       title: 'Vaccination Overdue',
-      message: 'Rabies vaccine overdue for Boer Doe G-012',
-      animalId: 'G-012',
+      message: 'FMD vaccine overdue for Brahman Heifer C-012',
+      animalId: 'C-012',
       timestamp: '5 hours ago',
       read: false,
       link: '/vaccination'
@@ -49,8 +49,8 @@ export default function Header() {
       id: 5,
       type: 'info',
       title: 'Upcoming Vaccination',
-      message: 'CDT vaccine due for Dorper Ewe S-005 on Dec 8 (16 days)',
-      animalId: 'S-005',
+      message: 'FMD vaccine due for Holstein Cow C-005 on Dec 8 (16 days)',
+      animalId: 'C-005',
       timestamp: '2 days ago',
       read: true,
       link: '/vaccination'
@@ -59,8 +59,8 @@ export default function Header() {
       id: 6,
       type: 'info',
       title: 'Vitamin B Booster Due',
-      message: 'Boer Maiden Doe G-019 - Next dose due Dec 10',
-      animalId: 'G-019',
+      message: 'Angus Cow C-019 - Next dose due Dec 10',
+      animalId: 'C-019',
       timestamp: '3 days ago',
       read: true,
       link: '/vaccination'
@@ -115,7 +115,7 @@ export default function Header() {
             href="#"
             className="text-sm font-medium text-slate-700 hover:text-green-700 transition"
           >
-            Livestock
+            Cattle
           </a>
           <a
             href="#"

@@ -40,13 +40,13 @@ const vaccinationRecords = [
   },
   {
     vaccinationId: 'VAC-002',
-    livestockId: 'G-019',
-    livestockName: 'Boer Maiden Doe',
-    species: 'Goat',
-    breed: 'Boer',
+    livestockId: 'C-019',
+    livestockName: 'Angus Cow',
+    species: 'Cattle',
+    breed: 'Angus',
     treatmentType: 'Vitamins',
     treatmentName: 'Vitamin B1, B2, B3, B6 + B12',
-    dosage: '2',
+    dosage: '5',
     dosageUnit: 'ml',
     administrationRoute: 'Subcutaneous',
     dateAdministered: '2025-11-10',
@@ -82,13 +82,13 @@ const vaccinationRecords = [
   },
   {
     vaccinationId: 'VAC-004',
-    livestockId: 'S-005',
-    livestockName: 'Dorper Ewe',
-    species: 'Sheep',
-    breed: 'Dorper',
+    livestockId: 'C-005',
+    livestockName: 'Holstein Cow',
+    species: 'Cattle',
+    breed: 'Holstein',
     treatmentType: 'Vaccine',
-    treatmentName: 'CDT Vaccine',
-    dosage: '2',
+    treatmentName: 'FMD Booster',
+    dosage: '5',
     dosageUnit: 'ml',
     administrationRoute: 'Subcutaneous',
     dateAdministered: '2025-11-08',
@@ -124,13 +124,13 @@ const vaccinationRecords = [
   },
   {
     vaccinationId: 'VAC-006',
-    livestockId: 'G-012',
-    livestockName: 'Boer Doe',
-    species: 'Goat',
-    breed: 'Boer',
+    livestockId: 'C-012',
+    livestockName: 'Brahman Heifer',
+    species: 'Cattle',
+    breed: 'Brahman',
     treatmentType: 'Vaccine',
-    treatmentName: 'Rabies Vaccine',
-    dosage: '1',
+    treatmentName: 'FMD Vaccine',
+    dosage: '5',
     dosageUnit: 'ml',
     administrationRoute: 'Intramuscular',
     dateAdministered: '2025-08-15',
@@ -148,9 +148,9 @@ const vaccinationRecords = [
 // Upcoming vaccinations schedule
 const upcomingVaccinations = [
   { livestockId: 'C-008', name: 'Brahman Bull', vaccine: 'Vitamin B-Complex', dueDate: '2025-12-10', daysLeft: 3 },
-  { livestockId: 'G-019', name: 'Boer Maiden Doe', vaccine: 'Deworming (Ivermectin)', dueDate: '2025-12-10', daysLeft: 3 },
-  { livestockId: 'S-005', name: 'Dorper Ewe', vaccine: 'Vitamin Supplement', dueDate: '2025-12-08', daysLeft: 1 },
-  { livestockId: 'G-012', name: 'Boer Doe', vaccine: 'Deworming (Levamisole)', dueDate: '2025-12-09', daysLeft: 2 }
+  { livestockId: 'C-019', name: 'Angus Cow', vaccine: 'Deworming (Ivermectin)', dueDate: '2025-12-10', daysLeft: 3 },
+  { livestockId: 'C-005', name: 'Holstein Cow', vaccine: 'Vitamin Supplement', dueDate: '2025-12-08', daysLeft: 1 },
+  { livestockId: 'C-012', name: 'Brahman Heifer', vaccine: 'FMD Booster', dueDate: '2025-12-09', daysLeft: 2 }
 ];
 
 // Separate list for due this week (within 7 days)
@@ -166,7 +166,6 @@ export default function Vaccination() {
   
   const [searchQuery, setSearchQuery] = React.useState('');
   const [statusFilter, setStatusFilter] = React.useState<'all' | 'completed' | 'due-soon' | 'overdue'>('all');
-  const [speciesFilter, setSpeciesFilter] = React.useState<'all' | 'cattle' | 'goat' | 'sheep'>('all');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isBatchMode, setIsBatchMode] = React.useState(false);
   const [selectedLivestock, setSelectedLivestock] = React.useState<string[]>([]);
@@ -477,10 +476,10 @@ export default function Vaccination() {
     { id: 'C-001', name: 'Brahman Cow', species: 'Cattle' },
     { id: 'C-002', name: 'Brahman Bull', species: 'Cattle' },
     { id: 'C-003', name: 'Brahman Heifer', species: 'Cattle' },
-    { id: 'G-001', name: 'Boer Buck', species: 'Goat' },
-    { id: 'G-002', name: 'Boer Doe', species: 'Goat' },
-    { id: 'S-001', name: 'Dorper Ram', species: 'Sheep' },
-    { id: 'S-002', name: 'Dorper Ewe', species: 'Sheep' }
+    { id: 'C-004', name: 'Angus Cow', species: 'Cattle' },
+    { id: 'C-005', name: 'Holstein Cow', species: 'Cattle' },
+    { id: 'C-006', name: 'Angus Bull', species: 'Cattle' },
+    { id: 'C-007', name: 'Holstein Heifer', species: 'Cattle' }
   ];
 
   const vaccineOptions = {
@@ -512,9 +511,8 @@ export default function Vaccination() {
                          record.livestockName.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          record.treatmentName.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || record.status === statusFilter;
-    const matchesSpecies = speciesFilter === 'all' || record.species.toLowerCase() === speciesFilter;
     
-    return matchesSearch && matchesStatus && matchesSpecies;
+    return matchesSearch && matchesStatus;
   });
 
   const totalVaccinations = vaccinationRecords.length;
@@ -620,17 +618,6 @@ export default function Vaccination() {
               <option value="completed">Completed</option>
               <option value="due-soon">Due Soon</option>
               <option value="overdue">Overdue</option>
-            </select>
-
-            <select
-              value={speciesFilter}
-              onChange={(e) => setSpeciesFilter(e.target.value as any)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="all">All Species</option>
-              <option value="cattle">Cattle</option>
-              <option value="goat">Goat</option>
-              <option value="sheep">Sheep</option>
             </select>
           </div>
 

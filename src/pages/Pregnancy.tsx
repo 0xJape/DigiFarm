@@ -58,7 +58,6 @@ interface PregnancyRecord {
 export default function Pregnancy() {
   const [activeTab, setActiveTab] = useState<'pregnant' | 'newborn'>('pregnant');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterSpecies, setFilterSpecies] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedPregnancy, setSelectedPregnancy] = useState<PregnancyRecord | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -85,21 +84,21 @@ export default function Pregnancy() {
   // 3. Not yet given birth
   const [pregnancies, setPregnancies] = useState<PregnancyRecord[]>([
     {
-      id: 2, // From BreedingOverview - G-019 breeding record
-      species: 'Goat',
-      breedingDate: '2024-10-05', // Confirmed breeding from Oct 5
-      expectedDueDate: '2025-03-05', // Goat gestation: ~150 days
-      daysPregnant: 142, // 142 days since breeding (passed 3 months/90 days)
-      gestationProgress: 95, // 142/150 = 95%
-      damId: 'G-019',
-      damName: 'Boer Maiden Doe',
-      damBreed: 'Boer',
-      sireId: 'G-001',
-      sireName: 'Boer Buck',
-      pregnancyStatus: 'Late',
+      id: 2,
+      species: 'Cattle',
+      breedingDate: '2024-06-15',
+      expectedDueDate: '2025-03-25',
+      daysPregnant: 190,
+      gestationProgress: 67,
+      damId: 'C-019',
+      damName: 'Angus Heifer',
+      damBreed: 'Angus',
+      sireId: 'B-002',
+      sireName: 'Angus Bull',
+      pregnancyStatus: 'Mid',
       lastCheckup: '1 day ago',
       healthStatus: 'Good',
-      notes: 'Confirmed pregnancy at 90 days. First pregnancy. Preparing for kidding. Moved to maternity pen.',
+      notes: 'Confirmed pregnancy at 90 days. First pregnancy. Preparing for calving.',
       bcsRecords: [
         {
           month: 'Month 3',
@@ -158,87 +157,68 @@ export default function Pregnancy() {
     },
     {
       id: 4,
-      species: 'Goat',
-      breedingDate: '2024-07-10',
-      expectedDueDate: '2024-12-07',
-      daysPregnant: 143,
-      gestationProgress: 95,
-      damId: 'G-008',
-      damName: 'Anglo-Nubian Doe',
-      damBreed: 'Anglo-Nubian',
-      sireId: 'G-001',
-      sireName: 'Boer Buck',
+      species: 'Cattle',
+      breedingDate: '2024-03-15',
+      expectedDueDate: '2024-12-24',
+      daysPregnant: 275,
+      gestationProgress: 97,
+      damId: 'C-008',
+      damName: 'Holstein Cow',
+      damBreed: 'Holstein',
+      sireId: 'B-001',
+      sireName: 'Brahman Bull',
       pregnancyStatus: 'Late',
       lastCheckup: '5 days ago',
       healthStatus: 'Good',
-      notes: 'Third pregnancy, twins expected',
+      notes: 'Third pregnancy, single calf expected',
       bcsRecords: [
         {
           month: 'Month 3',
           bcs: 3.0,
-          notes: 'Twins confirmed via ultrasound',
+          notes: 'Pregnancy progressing normally',
           recordedBy: 'Dr. Santos',
           date: '2024-10-10'
         }
       ],
       birthStatus: 'Given Birth',
-      birthDate: '2024-11-25',
+      birthDate: '2024-12-20',
       offspring: [
         {
           id: 1,
-          sex: 'Female',
-          weight: 3.2,
+          sex: 'Male',
+          weight: 38,
           condition: 'Healthy, nursing well',
           calfVigor: 'Strong',
-          notes: 'First twin, born at 8:15 AM'
-        },
-        {
-          id: 2,
-          sex: 'Male',
-          weight: 2.8,
-          condition: 'Slightly weak, improving',
-          calfVigor: 'Moderate',
-          notes: 'Second twin, born at 8:22 AM, needed assistance'
+          notes: 'Born naturally, healthy bull calf'
         }
       ]
     },
     {
       id: 5,
-      species: 'Sheep',
-      breedingDate: '2024-08-01',
-      expectedDueDate: '2024-12-28',
-      daysPregnant: 121,
-      gestationProgress: 81,
-      damId: 'S-005',
-      damName: 'Native Ewe',
-      damBreed: 'Native/Philippine Native',
-      sireId: 'S-001',
-      sireName: 'Barbados Blackbelly Ram',
-      pregnancyStatus: 'Mid',
+      species: 'Cattle',
+      breedingDate: '2024-04-10',
+      expectedDueDate: '2025-01-18',
+      daysPregnant: 248,
+      gestationProgress: 88,
+      damId: 'C-005',
+      damName: 'Brahman Cow',
+      damBreed: 'Brahman',
+      sireId: 'B-001',
+      sireName: 'Brahman Bull',
+      pregnancyStatus: 'Late',
       lastCheckup: '2 weeks ago',
       healthStatus: 'Attention Needed',
-      notes: 'First pregnancy, monitoring closely due to previous illness',
+      notes: 'Second pregnancy, monitoring closely',
       bcsRecords: [
         {
           month: 'Month 3',
           bcs: 2.5,
-          notes: 'Recovering well, gaining weight',
+          notes: 'Gaining weight steadily',
           recordedBy: 'Dr. Santos',
           date: '2024-11-01'
         }
       ],
-      birthStatus: 'Given Birth',
-      birthDate: '2024-11-15',
-      offspring: [
-        {
-          id: 1,
-          sex: 'Female',
-          weight: 2.1,
-          condition: 'Needs monitoring',
-          calfVigor: 'Weak',
-          notes: 'Born small, receiving supplemental feeding'
-        }
-      ]
+      birthStatus: 'Pregnant'
     }
   ]);
 
@@ -343,10 +323,9 @@ export default function Pregnancy() {
       pregnancy.damName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       pregnancy.sireId.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesSpecies = filterSpecies === 'all' || pregnancy.species.toLowerCase() === filterSpecies;
     const matchesStatus = filterStatus === 'all' || pregnancy.pregnancyStatus.toLowerCase() === filterStatus;
 
-    return matchesSearch && matchesSpecies && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
@@ -402,7 +381,7 @@ export default function Pregnancy() {
         </div>
         <div className="text-right">
           <p className="text-sm text-slate-600">
-            Gestation Periods: Cattle ~283 days | Goat ~150 days | Sheep ~147 days
+            Gestation Period: Cattle ~283 days
           </p>
         </div>
       </div>
@@ -487,18 +466,6 @@ export default function Pregnancy() {
               className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
-
-          {/* Species Filter */}
-          <select
-            value={filterSpecies}
-            onChange={(e) => setFilterSpecies(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          >
-            <option value="all">All Species</option>
-            <option value="cattle">Cattle</option>
-            <option value="goat">Goat</option>
-            <option value="sheep">Sheep</option>
-          </select>
 
           {/* Status Filter */}
           <select

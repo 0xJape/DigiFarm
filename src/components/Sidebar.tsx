@@ -34,7 +34,7 @@ const veterinarianSections: NavSection[] = [
     title: '',
     items: [
       { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['veterinarian'] },
-      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['veterinarian'] },
+      { name: 'Cattle', path: '/livestock', icon: Beef, badge: 71, roles: ['veterinarian'] },
       { name: 'Health', path: '/vaccination', icon: Syringe, badge: 12, roles: ['veterinarian'] },
       { name: 'Breeding', path: '/breeding', icon: Heart, roles: ['veterinarian'] },
       { name: 'Pregnancy', path: '/pregnancy', icon: Baby, badge: 1, roles: ['veterinarian'] },
@@ -48,7 +48,7 @@ const farmManagerSections: NavSection[] = [
     title: '',
     items: [
       { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['farm_manager'] },
-      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['farm_manager'] },
+      { name: 'Cattle', path: '/livestock', icon: Beef, badge: 71, roles: ['farm_manager'] },
       { name: 'Breeding', path: '/breeding', icon: Heart, roles: ['farm_manager'] },
       { name: 'Pregnancy', path: '/pregnancy', icon: Baby, badge: 1, roles: ['farm_manager'] },
       { name: 'Reports', path: '/reports', icon: FileText, roles: ['farm_manager'] },
@@ -61,7 +61,7 @@ const viewerSections: NavSection[] = [
     title: '',
     items: [
       { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: ['viewer'] },
-      { name: 'Livestock', path: '/livestock', icon: Beef, badge: 71, roles: ['viewer'] },
+      { name: 'Cattle', path: '/livestock', icon: Beef, badge: 71, roles: ['viewer'] },
       { name: 'Reports', path: '/reports', icon: FileText, roles: ['viewer'] },
     ],
   },

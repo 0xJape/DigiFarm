@@ -35,8 +35,8 @@ const mockAuditLogs: AuditLogEntry[] = [
     userRole: 'Manager',
     action: 'UPDATE',
     entity: 'Vaccination',
-    entityId: 'G-012',
-    details: 'Updated Rabies vaccine record',
+    entityId: 'C-012',
+    details: 'Updated FMD vaccine record',
     ipAddress: '192.168.1.108',
     status: 'success'
   },

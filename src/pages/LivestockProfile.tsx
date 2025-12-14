@@ -219,16 +219,11 @@ export default function LivestockProfile() {
     notes: ''
   });
   
-  // Breed data - Common Philippine breeds organized by species
-  const [breedsBySpecies, setBreedsBySpecies] = React.useState({
-    Cattle: ['Brahman', 'Native/Carabao', 'Crossbreed'],
-    Goat: ['Anglo-Nubian', 'Native/Philippine Native', 'Crossbreed'],
-    Sheep: ['Barbados Blackbelly', 'Native/Philippine Native', 'Crossbreed']
-  });
+  // Breed data - Common cattle breeds in the Philippines
+  const [cattleBreeds, setCattleBreeds] = React.useState(['Brahman', 'Angus', 'Holstein', 'Native/Carabao', 'Crossbreed']);
   
   const [editFormData, setEditFormData] = React.useState({
     livestockId: '',
-    species: '',
     category: '',
     breed: '',
     sex: '',
@@ -251,7 +246,6 @@ export default function LivestockProfile() {
     if (animal && isEditModalOpen) {
       setEditFormData({
         livestockId: animal.livestockId,
-        species: animal.species,
         category: animal.category,
         breed: animal.breed,
         sex: animal.sex,
@@ -280,14 +274,7 @@ export default function LivestockProfile() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     
-    // Reset breed when species changes
-    if (name === 'species') {
-      setEditFormData({
-        ...editFormData,
-        [name]: value,
-        breed: '' // Clear breed selection when species changes
-      });
-    } else if (name === 'status' && value === 'Deceased') {
+    if (name === 'status' && value === 'Deceased') {
       // Open deceased modal when status changed to Deceased
       setEditFormData({
         ...editFormData,
@@ -340,11 +327,8 @@ export default function LivestockProfile() {
   };
 
   const handleAddNewBreed = () => {
-    if (newBreedName.trim() && editFormData.species) {
-      setBreedsBySpecies({
-        ...breedsBySpecies,
-        [editFormData.species]: [...breedsBySpecies[editFormData.species as keyof typeof breedsBySpecies], newBreedName.trim()]
-      });
+    if (newBreedName.trim()) {
+      setCattleBreeds([...cattleBreeds, newBreedName.trim()]);
       setEditFormData({
         ...editFormData,
         breed: newBreedName.trim()
@@ -354,8 +338,8 @@ export default function LivestockProfile() {
     }
   };
 
-  // Get available breeds based on selected species
-  const availableBreeds = editFormData.species ? breedsBySpecies[editFormData.species as keyof typeof breedsBySpecies] || [] : [];
+  // Get available breeds for cattle
+  const availableBreeds = cattleBreeds;
 
   const handleExportBreedingHistory = () => {
     if (!animal) return;
@@ -1095,13 +1079,13 @@ export default function LivestockProfile() {
       <div className="flex flex-col items-center justify-center py-20">
         <AlertCircle size={48} className="text-slate-400 mb-4" />
         <h2 className="text-xl font-semibold text-slate-900 mb-2">Animal Not Found</h2>
-        <p className="text-slate-600 mb-6">The livestock record you're looking for doesn't exist.</p>
+        <p className="text-slate-600 mb-6">The cattle record you're looking for doesn't exist.</p>
         <Link
           to="/livestock"
           className="flex items-center space-x-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
         >
           <ArrowLeft size={16} />
-          <span>Back to Livestock</span>
+          <span>Back to Cattle Herd</span>
         </Link>
       </div>
     );
@@ -1197,7 +1181,7 @@ export default function LivestockProfile() {
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
           <div className="flex items-center space-x-2">
             <Eye className="w-4 h-4 text-blue-600" />
-            <p className="text-xs font-medium text-blue-900">View-Only Mode - You can view livestock details but cannot edit or add records</p>
+            <p className="text-xs font-medium text-blue-900">View-Only Mode - You can view cattle details but cannot edit or add records</p>
           </div>
         </div>
       )}
@@ -1263,7 +1247,7 @@ export default function LivestockProfile() {
             <h2 className="text-lg font-semibold text-slate-900 mb-4">Basic Information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="md:col-span-2 p-4 bg-gradient-to-r from-primary-50 to-emerald-50 rounded-lg border-2 border-primary-200">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Livestock ID</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Cattle ID</p>
                 <p className="text-2xl font-bold text-primary-700 font-mono">{animal.livestockId}</p>
               </div>
               <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -1815,7 +1799,7 @@ export default function LivestockProfile() {
                           <div className="flex items-start space-x-3">
                             <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                               <span className="text-lg">
-                                {child.species === 'Cattle' ? '🐄' : child.species === 'Goat' ? '🐐' : '🐑'}
+                                🐄
                               </span>
                             </div>
                             <div className="flex-1">
@@ -1882,7 +1866,7 @@ export default function LivestockProfile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Livestock ID <span className="text-red-500">*</span>
+                      Cattle ID <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -1893,84 +1877,34 @@ export default function LivestockProfile() {
                       disabled
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
                     />
-                    <p className="text-xs text-slate-500 mt-1">Livestock ID cannot be changed</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Species <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                      name="species"
-                      value={editFormData.species}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    >
-                      <option value="">Select species</option>
-                      <option value="Cattle">Cattle</option>
-                      <option value="Goat">Goat</option>
-                      <option value="Sheep">Sheep</option>
-                    </select>
+                    <p className="text-xs text-slate-500 mt-1">Cattle ID cannot be changed</p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Category <span className="text-red-500">*</span>
                     </label>
-                    {!editFormData.species ? (
-                      <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-400 text-sm">
-                        Please select a species first
-                      </div>
-                    ) : (
-                      <select
-                        name="category"
-                        value={editFormData.category}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      >
-                        <option value="">Select category</option>
-                        {editFormData.species === 'Cattle' && (
-                          <>
-                            <option value="Bull">Bull (Adult Male)</option>
-                            <option value="Cow">Cow (Adult Female)</option>
-                            <option value="Heifer">Heifer (Young Female)</option>
-                            <option value="Steer">Steer (Castrated Male)</option>
-                            <option value="Calf">Calf (Young)</option>
-                          </>
-                        )}
-                        {editFormData.species === 'Goat' && (
-                          <>
-                            <option value="Buck">Buck (Adult Male)</option>
-                            <option value="Doe">Doe (Adult Female)</option>
-                            <option value="Maiden Doe">Maiden Doe (Young Female)</option>
-                            <option value="Wether">Wether (Castrated Male)</option>
-                            <option value="Kid">Kid (Young)</option>
-                          </>
-                        )}
-                        {editFormData.species === 'Sheep' && (
-                          <>
-                            <option value="Ram">Ram (Adult Male)</option>
-                            <option value="Ewe">Ewe (Adult Female)</option>
-                            <option value="Maiden Ewe">Maiden Ewe (Young Female)</option>
-                            <option value="Wether">Wether (Castrated Male)</option>
-                            <option value="Lamb">Lamb (Young)</option>
-                          </>
-                        )}
-                      </select>
-                    )}
+                    <select
+                      name="category"
+                      value={editFormData.category}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="">Select category</option>
+                      <option value="Bull">Bull (Adult Male)</option>
+                      <option value="Yearling Bull">Yearling Bull (Young Male)</option>
+                      <option value="Cow">Cow (Adult Female)</option>
+                      <option value="Heifer">Heifer (Young Female)</option>
+                      <option value="Calf">Calf (Young)</option>
+                    </select>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
                       Breed
                     </label>
-                    {!editFormData.species ? (
-                      <div className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-400 text-sm">
-                        Please select a species first
-                      </div>
-                    ) : !showAddBreed ? (
+                    {!showAddBreed ? (
                       <div className="flex space-x-2">
                         <select
                           name="breed"

@@ -46,52 +46,52 @@ const recentBreedings = [
   {
     // Breeding Table
     id: 2,
-    species: 'goat',
-    breedingDate: '2025-10-05', // Check due in ~1.5 months
+    species: 'cattle',
+    breedingDate: '2025-10-05',
     breedingTime: '02:15 PM',
-    breedingLocation: 'Goat Paddock',
+    breedingLocation: 'Breeding Pen 2',
     handlerName: 'Kyle Stephen',
-    notes: 'First breeding for this maiden doe',
+    notes: 'First breeding for this maiden heifer',
     recordedBy: 'Kyle Stephen',
     // Dam Table
-    damId: 'G-019',
-    damName: 'Boer Maiden Doe',
-    damBreed: 'Boer',
-    damAge: '1.5 years',
+    damId: 'C-019',
+    damName: 'Angus Heifer',
+    damBreed: 'Angus',
+    damAge: '2 years',
     damHealthStatus: 'Healthy',
     damBodyCondition: 3,
-    heatSignsObserved: 'Tail wagging, vocalization',
+    heatSignsObserved: 'Standing heat, vocalization',
     // Sire Table
-    sireId: 'G-001',
-    sireName: 'Boer Buck',
-    sireBreed: 'Boer',
-    sireAge: '3 years',
+    sireId: 'B-002',
+    sireName: 'Angus Bull',
+    sireBreed: 'Angus',
+    sireAge: '5 years',
     // Breeding Status Table
     status: 'Confirmed'
   },
   {
     // Breeding Table
     id: 3,
-    species: 'sheep',
-    breedingDate: '2025-11-14', // Check due in ~2.5 months
+    species: 'cattle',
+    breedingDate: '2025-11-14',
     breedingTime: '10:00 AM',
-    breedingLocation: 'Sheep Paddock',
+    breedingLocation: 'Breeding Pen 3',
     handlerName: 'Laiza Limpin',
-    notes: 'Ram introduced to breeding group',
+    notes: 'Bull introduced to breeding group',
     recordedBy: 'Laiza Limpin',
     // Dam Table
-    damId: 'S-005',
-    damName: 'Dorper Ewe',
-    damBreed: 'Dorper',
-    damAge: '3 years',
+    damId: 'C-005',
+    damName: 'Holstein Cow',
+    damBreed: 'Holstein',
+    damAge: '4 years',
     damHealthStatus: 'Healthy',
     damBodyCondition: 3.5,
-    heatSignsObserved: 'Receptive to ram',
+    heatSignsObserved: 'Receptive to bull',
     // Sire Table
-    sireId: 'S-001',
-    sireName: 'Dorper Ram',
-    sireBreed: 'Dorper',
-    sireAge: '4 years',
+    sireId: 'B-001',
+    sireName: 'Brahman Bull',
+    sireBreed: 'Brahman',
+    sireAge: '5 years',
     // Breeding Status Table
     status: 'Not Confirmed'
   },
@@ -124,26 +124,26 @@ const recentBreedings = [
   {
     // Breeding Table
     id: 5,
-    species: 'goat',
-    breedingDate: '2025-11-21', // Just bred yesterday
+    species: 'cattle',
+    breedingDate: '2025-11-21',
     breedingTime: '11:30 AM',
-    breedingLocation: 'Goat Paddock',
+    breedingLocation: 'Breeding Pen 1',
     handlerName: 'Kyle Stephen',
-    notes: 'Second breeding for this doe',
+    notes: 'Second breeding for this cow',
     recordedBy: 'Kyle Stephen',
     // Dam Table
-    damId: 'G-008',
-    damName: 'Boer Doe',
-    damBreed: 'Boer',
-    damAge: '2 years',
+    damId: 'C-008',
+    damName: 'Angus Cow',
+    damBreed: 'Angus',
+    damAge: '3 years',
     damHealthStatus: 'Healthy',
     damBodyCondition: 3.5,
-    heatSignsObserved: 'Strong vocalization, tail flagging',
+    heatSignsObserved: 'Strong vocalization, standing heat',
     // Sire Table
-    sireId: 'G-001',
-    sireName: 'Boer Buck',
-    sireBreed: 'Boer',
-    sireAge: '3 years',
+    sireId: 'B-002',
+    sireName: 'Angus Bull',
+    sireBreed: 'Angus',
+    sireAge: '5 years',
     // Breeding Status Table
     status: 'Not Confirmed'
   }
@@ -172,24 +172,14 @@ const activeSires = [
     lastBreeding: '2024-11-10'
   },
   {
-    id: 'G-001',
-    name: 'Boer Buck',
-    species: 'Goat',
-    breed: 'Boer',
-    age: '3y 1m',
-    totalBreedings: 12,
-    successRate: 83,
+    id: 'B-003',
+    name: 'Holstein Bull',
+    species: 'Cattle',
+    breed: 'Holstein',
+    age: '4y 6m',
+    totalBreedings: 7,
+    successRate: 85,
     lastBreeding: '2024-11-18'
-  },
-  {
-    id: 'S-001',
-    name: 'Dorper Ram',
-    species: 'Sheep',
-    breed: 'Dorper',
-    age: '4y 0m',
-    totalBreedings: 9,
-    successRate: 89,
-    lastBreeding: '2024-11-15'
   }
 ];
 
@@ -199,22 +189,19 @@ const mockLivestock = [
   { id: 'C-023', name: 'Brahman Heifer', species: 'Cattle', breed: 'Brahman', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '3y 2m' },
   { id: 'C-015', name: 'Brahman Cow', species: 'Cattle', breed: 'Brahman', sex: 'Female', status: 'Healthy', isOnHeat: false, breedingStatus: 'Not in Heat', age: '5y 1m' },
   { id: 'C-042', name: 'Holstein Cow', species: 'Cattle', breed: 'Holstein', sex: 'Female', status: 'Sick', isOnHeat: false, breedingStatus: 'Under Treatment', age: '4y 0m' },
-  { id: 'G-019', name: 'Boer Doe', species: 'Goat', breed: 'Boer', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '2y 1m' },
-  { id: 'G-008', name: 'Boer Doe 2', species: 'Goat', breed: 'Boer', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '2y 6m' },
-  { id: 'S-005', name: 'Dorper Ewe', species: 'Sheep', breed: 'Dorper', sex: 'Female', status: 'Healthy', isOnHeat: false, breedingStatus: 'Not in Heat', age: '3y 0m' },
-  { id: 'S-012', name: 'Dorper Ewe 2', species: 'Sheep', breed: 'Dorper', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '2y 8m' },
+  { id: 'C-019', name: 'Angus Heifer', species: 'Cattle', breed: 'Angus', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '2y 1m' },
+  { id: 'C-008', name: 'Angus Cow', species: 'Cattle', breed: 'Angus', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '3y 6m' },
+  { id: 'C-005', name: 'Holstein Cow 2', species: 'Cattle', breed: 'Holstein', sex: 'Female', status: 'Healthy', isOnHeat: false, breedingStatus: 'Not in Heat', age: '4y 0m' },
+  { id: 'C-012', name: 'Holstein Heifer', species: 'Cattle', breed: 'Holstein', sex: 'Female', status: 'Healthy', isOnHeat: true, breedingStatus: 'Open for Breeding', age: '2y 8m' },
   // Males
   { id: 'B-001', name: 'Brahman Bull', species: 'Cattle', breed: 'Brahman', sex: 'Male', status: 'Healthy', age: '5y 0m' },
   { id: 'B-002', name: 'Angus Bull', species: 'Cattle', breed: 'Angus', sex: 'Male', status: 'Healthy', age: '6y 1m' },
   { id: 'B-005', name: 'Brahman Bull 2', species: 'Cattle', breed: 'Brahman', sex: 'Male', status: 'Sick', age: '4y 6m' },
-  { id: 'G-001', name: 'Boer Buck', species: 'Goat', breed: 'Boer', sex: 'Male', status: 'Healthy', age: '3y 2m' },
-  { id: 'S-001', name: 'Dorper Ram', species: 'Sheep', breed: 'Dorper', sex: 'Male', status: 'Healthy', age: '4y 1m' },
 ];
 
 export default function BreedingOverview() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [speciesFilter, setSpeciesFilter] = React.useState<'all' | 'cattle' | 'goat' | 'sheep'>('all');
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isDamSelectOpen, setIsDamSelectOpen] = React.useState(false);
   const [isSireSelectOpen, setIsSireSelectOpen] = React.useState(false);
@@ -414,19 +401,6 @@ export default function BreedingOverview() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <select
-              value={speciesFilter}
-              onChange={(e) => setSpeciesFilter(e.target.value as any)}
-              className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="all">All Species</option>
-              <option value="cattle">Cattle</option>
-              <option value="goat">Goat</option>
-              <option value="sheep">Sheep</option>
-            </select>
           </div>
         </div>
       </div>
@@ -675,10 +649,7 @@ export default function BreedingOverview() {
                       required
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
-                      <option value="">Select species</option>
                       <option value="Cattle">Cattle</option>
-                      <option value="Goat">Goat</option>
-                      <option value="Sheep">Sheep</option>
                     </select>
                   </div>
                 </div>

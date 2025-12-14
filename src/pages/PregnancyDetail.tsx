@@ -107,18 +107,18 @@ export default function PregnancyDetail() {
   // Mock pregnancy data - In production, fetch by ID from API
   const mockPregnancy: PregnancyRecord = {
     id: 2,
-    species: 'Goat',
-    breedingDate: '2024-10-05',
-    expectedDueDate: '2025-03-05',
-    daysPregnant: 142,
-    gestationProgress: 95,
-    damId: 'G-019',
-    damName: 'Boer Maiden Doe',
-    damBreed: 'Boer',
+    species: 'Cattle',
+    breedingDate: '2024-06-15',
+    expectedDueDate: '2025-03-25',
+    daysPregnant: 190,
+    gestationProgress: 67,
+    damId: 'C-019',
+    damName: 'Angus Heifer',
+    damBreed: 'Angus',
     damAge: '2y 1m',
-    sireId: 'G-001',
-    sireName: 'Boer Buck',
-    sireBreed: 'Boer',
+    sireId: 'B-002',
+    sireName: 'Angus Bull',
+    sireBreed: 'Angus',
     pregnancyStatus: 'Late',
     lastCheckup: '1 day ago',
     healthStatus: 'Good',
@@ -379,7 +379,7 @@ export default function PregnancyDetail() {
               {pregnancy.pregnancyStatus} Stage
             </span>
             <p className="text-xs text-slate-600 mt-2">
-              Gestation Period: {pregnancy.species === 'Cattle' ? '~283 days' : pregnancy.species === 'Goat' ? '~150 days' : '~147 days'}
+              Gestation Period: ~283 days
             </p>
           </div>
         </div>

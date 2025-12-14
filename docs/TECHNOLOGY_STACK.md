@@ -1,8 +1,8 @@
-# DigiFarm Technology Stack
+# HerdSync Technology Stack
 
 ## Overview
 
-DigiFarm is a comprehensive livestock management system built using modern web technologies. The application follows the **PERN Stack** architecture, which provides a robust, scalable, and type-safe full-stack solution for managing complex livestock data operations.
+HerdSync is a comprehensive cattle management system built using modern web technologies. The application follows the **PERN Stack** architecture, which provides a robust, scalable, and type-safe full-stack solution for managing complex cattle farm data operations.
 
 ---
 
@@ -70,7 +70,7 @@ DigiFarm is a comprehensive livestock management system built using modern web t
 - **Usage**:
   - Type definitions for all components, functions, and data structures
   - Interface definitions for API responses
-  - Enum types for livestock status, roles, gender, etc.
+  - Enum types for cattle status, roles, gender, cattle categories, etc.
 
 #### **Vite**
 - **Purpose**: Modern build tool and development server
@@ -93,9 +93,9 @@ DigiFarm is a comprehensive livestock management system built using modern web t
   - Responsive design made easy
   - Small production bundle size (unused styles purged)
 - **Configuration**:
-  - Custom color palette for DigiFarm branding
+  - Custom color palette for HerdSync branding
   - Responsive breakpoints (mobile, tablet, desktop)
-  - Custom utility classes for livestock cards
+  - Custom utility classes for cattle cards
 
 ### UI Component Library
 
@@ -114,7 +114,7 @@ DigiFarm is a comprehensive livestock management system built using modern web t
   - Responsive and customizable
   - Supports line charts, bar charts, pie charts
 - **Usage**:
-  - Livestock population trends
+  - Cattle population trends
   - Health statistics visualization
   - Breeding performance analytics
 
@@ -129,7 +129,7 @@ DigiFarm is a comprehensive livestock management system built using modern web t
   - Easy to use with React hooks
 - **Global State Managed**:
   - User authentication state (logged-in user, JWT token)
-  - Livestock data (animals, health records, breeding records)
+  - Cattle data (animals, health records, breeding records)
   - UI state (modals, sidebars, notifications)
 
 ### Routing
@@ -138,8 +138,8 @@ DigiFarm is a comprehensive livestock management system built using modern web t
 - **Purpose**: Client-side routing for single-page application (SPA)
 - **Routes**:
   - `/` - Home/Dashboard
-  - `/livestock` - Livestock list
-  - `/livestock/:id` - Individual livestock profile
+  - `/livestock` - Cattle list
+  - `/livestock/:id` - Individual cattle profile
   - `/health` - Health records
   - `/breeding` - Breeding management
   - `/pregnancy` - Pregnancy monitoring
@@ -193,9 +193,9 @@ DigiFarm is a comprehensive livestock management system built using modern web t
 - **Why PostgreSQL**:
   - Open-source and free
   - ACID compliant (data integrity)
-  - Excellent for complex relationships (livestock → health records → breeding)
+  - Excellent for complex relationships (cattle → health records → breeding)
   - Advanced features (JSON support, full-text search, triggers)
-  - Scales well for farm operations
+  - Scales well for cattle farm operations
 - **Key Features**:
   - Foreign key constraints for data integrity
   - Indexes for fast queries
