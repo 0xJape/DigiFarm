@@ -1,6 +1,6 @@
-# 🌾 DigiFarm - Livestock Information Management System
+# 🐄 HerdSync - Cattle Management System
 
-A modern, web-based livestock management platform built with React, TypeScript, and Tailwind CSS.
+A modern, web-based cattle management platform built with React, TypeScript, and Tailwind CSS.
 
 ## 🚀 Quick Start
 
@@ -68,12 +68,13 @@ npm run format
 ✅ Complete wireframes for all pages
 
 ### Planned
-- [ ] Livestock list with filtering and search
-- [ ] Individual animal profiles
-- [ ] Health & medical records tracking
-- [ ] Breeding management system
-- [ ] Activity logs
-- [ ] Reports & analytics
+- [x] Cattle list with filtering and search
+- [x] Individual cattle profiles
+- [x] Health & vaccination records tracking
+- [x] Breeding management system
+- [x] Pregnancy tracking
+- [x] Activity logs
+- [x] Reports & analytics
 - [ ] User authentication
 - [ ] Real-time notifications
 
@@ -84,8 +85,8 @@ npm run format
 Complete wireframe documentation is available in [`docs/wireframes/`](./docs/wireframes/):
 
 1. **[Dashboard](./docs/wireframes/01-dashboard.md)** - Overview with stats, alerts, and quick actions
-2. **[Livestock List](./docs/wireframes/02-livestock-list.md)** - Searchable, filterable animal listing
-3. **[Livestock Profile](./docs/wireframes/03-livestock-profile.md)** - Individual animal details with tabs
+2. **[Cattle List](./docs/wireframes/02-livestock-list.md)** - Searchable, filterable cattle listing
+3. **[Cattle Profile](./docs/wireframes/03-livestock-profile.md)** - Individual cattle details with tabs
 4. **[Health Records](./docs/wireframes/04-health-records.md)** - Medical history and treatment tracking
 5. **[Breeding Records](./docs/wireframes/05-breeding-records.md)** - Reproduction and lineage management
 6. **[Activity Logs](./docs/wireframes/06-activity-logs.md)** - Daily activities and task tracking
@@ -120,7 +121,7 @@ Each wireframe includes:
 ## 📁 Project Structure
 
 ```
-DigiFarm/
+HerdSync/
 ├── docs/
 │   └── wireframes/          # UI/UX wireframes
 ├── src/
