@@ -309,7 +309,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           title="Total Cattle"
-          value="67"
+          value="25"
           change="10.2%"
           changeType="positive"
           icon={Beef}
@@ -317,7 +317,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Healthy Cattle"
-          value="60"
+          value="23"
           change="1.8%"
           changeType="positive"
           icon={HeartPulse}
@@ -333,7 +333,7 @@ export default function Dashboard() {
         />
         <StatCard
           title="Active Breeding"
-          value="8"
+          value="3"
           change="20%"
           changeType="positive"
           icon={Users}

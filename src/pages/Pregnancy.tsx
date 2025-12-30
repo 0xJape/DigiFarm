@@ -300,12 +300,14 @@ export default function Pregnancy() {
   };
 
   const updateOffspringCount = (count: number) => {
-    const newOffspring = Array.from({ length: count }, (_, i) => 
+    const safeCount = isNaN(count) ? 1 : count;
+    const clampedCount = Math.max(1, Math.min(3, safeCount));
+    const newOffspring = Array.from({ length: clampedCount }, (_, i) => 
       birthFormData.offspring[i] || { sex: 'Male' as 'Male' | 'Female', weight: '', condition: '', notes: '' }
     );
     setBirthFormData({
       ...birthFormData,
-      numberOfOffspring: count,
+      numberOfOffspring: clampedCount,
       offspring: newOffspring
     });
   };
@@ -1125,7 +1127,7 @@ export default function Pregnancy() {
                 <input
                   type="number"
                   min="1"
-                  max="10"
+                  max="3"
                   value={birthFormData.numberOfOffspring}
                   onChange={(e) => updateOffspringCount(parseInt(e.target.value))}
                   required
